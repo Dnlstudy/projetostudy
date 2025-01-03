@@ -44,8 +44,10 @@ def extract_channel_id(url):
     """Extrai o ID do canal de diferentes formatos de URL do YouTube"""
     try:
         # Remover parâmetros da URL e decodificar caracteres especiais
+        from urllib.parse import unquote
         url = unquote(url.split('?')[0].strip('/'))
         
+        # Tentar diferentes formatos de URL
         if '/channel/' in url:
             # Para URLs no formato youtube.com/channel/ID
             return url.split('/channel/')[-1]
@@ -58,12 +60,15 @@ def extract_channel_id(url):
                 channel_handle = '@' + url.split('@')[-1].split('/')[0]
             else:
                 # Se for /c/ ou /user/, extrair o nome personalizado
-                channel_handle = url.split('/')[-1]
+                if '/c/' in url:
+                    channel_handle = url.split('/c/')[-1]
+                else:
+                    channel_handle = url.split('/')[-1]
             
             # Buscar canal
             try:
                 request = youtube.search().list(
-                    part="id",
+                    part="id,snippet",
                     q=channel_handle,
                     type="channel",
                     maxResults=1
