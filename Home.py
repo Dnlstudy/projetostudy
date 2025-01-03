@@ -102,7 +102,7 @@ def display_channels(channels_data):
         channels_by_subject[subject].append(channel)
     
     # CSS para grid com scroll horizontal
-    st.markdown("""
+    st.write("""
         <style>
             .channel-grid {
                 display: grid;
@@ -145,7 +145,7 @@ def display_channels(channels_data):
         channels = channels_by_subject[subject]
         
         # Título da matéria
-        st.markdown(f'<h3 class="subject-title">{subject}</h3>', unsafe_allow_html=True)
+        st.write(f'<h3 class="subject-title">{subject}</h3>', unsafe_allow_html=True)
         
         # Grid de cards com scroll horizontal
         html = '<div class="channel-grid">'
@@ -158,7 +158,7 @@ def display_channels(channels_data):
             '''
         html += '</div>'
         
-        st.markdown(html, unsafe_allow_html=True)
+        st.write(html, unsafe_allow_html=True)
 
 def main():
     # Carregar dados
