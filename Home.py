@@ -32,10 +32,13 @@ st.markdown("""
     margin: 5px;
     transition: transform 0.2s;
     cursor: pointer;
+    text-decoration: none;
+    display: block;
 }
 .channel-card:hover {
     transform: scale(1.05);
     background-color: #282828;
+    text-decoration: none;
 }
 .banner-container {
     position: relative;
@@ -60,12 +63,12 @@ st.markdown("""
 .category-card:hover {
     background-color: #282828;
 }
-</style>
-<script>
-function openChannel(channelId) {
-    window.open('https://youtube.com/channel/' + channelId, '_blank');
+.channel-title {
+    color: white;
+    margin-top: 10px;
+    text-decoration: none;
 }
-</script>
+</style>
 """, unsafe_allow_html=True)
 
 def show_category(category_id, category_data):
@@ -131,10 +134,10 @@ def main():
         for idx, channel in enumerate(channels):
             with cols[idx % 4]:
                 st.markdown(f"""
-                <div class='channel-card' onclick="openChannel('{channel['id']}')">
+                <a href="https://youtube.com/channel/{channel['id']}" target="_blank" class="channel-card">
                     <img src="{channel['thumbnail']}" style="width:100%; border-radius:5px;">
-                    <h4 style="color:white; margin-top:10px;">{channel['name']}</h4>
-                </div>
+                    <h4 class="channel-title">{channel['name']}</h4>
+                </a>
                 """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
