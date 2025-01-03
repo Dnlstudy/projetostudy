@@ -28,6 +28,8 @@ st.markdown("""
         padding: 10px 0;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none; /* Firefox */
+        margin: 0 -1rem;
+        padding: 0 1rem;
     }
     
     .channel-carousel::-webkit-scrollbar {
@@ -40,6 +42,7 @@ st.markdown("""
         margin-right: 15px;
         vertical-align: top;
         transition: transform 0.3s;
+        text-decoration: none;
     }
     
     .channel-card:hover {
@@ -49,6 +52,8 @@ st.markdown("""
     .channel-card img {
         width: 100%;
         border-radius: 8px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
     }
     
     .channel-card .title {
@@ -61,12 +66,15 @@ st.markdown("""
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
+        line-height: 1.2;
+        height: 2.4em;
     }
     
     .subject-title {
         color: #E50914;
         margin: 30px 0 10px 0;
         font-size: 24px;
+        font-weight: bold;
     }
     
     /* Estilos responsivos */
@@ -93,13 +101,18 @@ def display_channels(channels_data):
             channels_by_subject[subject] = []
         channels_by_subject[subject].append(channel)
     
-    # Exibir canais agrupados por matéria
-    for subject, channels in channels_by_subject.items():
+    # Exibir canais agrupados por matéria em ordem alfabética
+    for subject in sorted(channels_by_subject.keys()):
+        channels = channels_by_subject[subject]
+        
         # Título da matéria
         st.markdown(f'<h3 class="subject-title">{subject}</h3>', unsafe_allow_html=True)
         
         # Início do carrossel
-        carousel_html = '<div class="channel-carousel">'
+        st.write(
+            f'<div class="channel-carousel">',
+            unsafe_allow_html=True
+        )
         
         # Adicionar cards dos canais
         for channel in channels:
@@ -107,19 +120,18 @@ def display_channels(channels_data):
             thumbnail = channel.get("thumbnail", "")
             title = channel.get("name", "")
             
-            card_html = f"""
-            <div class="channel-card">
-                <a href="https://youtube.com/channel/{channel_id}" target="_blank">
+            st.write(
+                f'''
+                <a href="https://youtube.com/channel/{channel_id}" target="_blank" class="channel-card">
                     <img src="{thumbnail}" alt="{title}">
                     <div class="title">{title}</div>
                 </a>
-            </div>
-            """
-            carousel_html += card_html
+                ''',
+                unsafe_allow_html=True
+            )
         
         # Fechar carrossel
-        carousel_html += '</div>'
-        st.markdown(carousel_html, unsafe_allow_html=True)
+        st.write('</div>', unsafe_allow_html=True)
 
 def main():
     # Carregar dados
