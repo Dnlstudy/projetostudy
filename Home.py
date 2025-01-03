@@ -111,6 +111,12 @@ def display_channels(channels_data):
                 padding: 20px 0;
             }
             
+            div[data-testid="stHorizontalBlock"] > div {
+                background: transparent !important;
+                border: none !important;
+                padding: 0 !important;
+            }
+            
             .subject-title {
                 color: #E50914;
                 font-size: 28px;
@@ -120,7 +126,7 @@ def display_channels(channels_data):
             
             .channel-card {
                 text-decoration: none;
-                background: rgba(255, 255, 255, 0.05);
+                background: transparent;
                 border-radius: 12px;
                 overflow: hidden;
                 transition: transform 0.2s;
@@ -130,13 +136,13 @@ def display_channels(channels_data):
             
             .channel-card:hover {
                 transform: scale(1.05);
-                background: rgba(255, 255, 255, 0.1);
             }
             
             .channel-thumbnail {
                 width: 100%;
                 aspect-ratio: 16/9;
                 object-fit: cover;
+                border-radius: 12px;
             }
             
             .channel-title {
