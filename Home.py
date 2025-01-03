@@ -108,32 +108,27 @@ def display_channels(channels_data):
         # Título da matéria
         st.markdown(f'<h3 class="subject-title">{subject}</h3>', unsafe_allow_html=True)
         
-        # Container para o carrossel
-        st.markdown('<div style="overflow-x: auto; white-space: nowrap; padding: 10px 0;">', unsafe_allow_html=True)
+        # Criar colunas para os cards
+        cols = st.columns(len(channels))
         
-        # Adicionar cards dos canais
-        for channel in channels:
-            channel_id = channel.get("id", "")
-            thumbnail = channel.get("thumbnail", "")
-            title = channel.get("name", "")
-            
-            # Card individual
-            st.markdown(
-                f'''
-                <div style="display: inline-block; width: 200px; margin-right: 15px; vertical-align: top;">
+        # Adicionar cards nas colunas
+        for idx, (col, channel) in enumerate(zip(cols, channels)):
+            with col:
+                channel_id = channel.get("id", "")
+                thumbnail = channel.get("thumbnail", "")
+                title = channel.get("name", "")
+                
+                st.markdown(
+                    f'''
                     <a href="https://youtube.com/channel/{channel_id}" target="_blank" style="text-decoration: none;">
-                        <img src="{thumbnail}" style="width: 100%; border-radius: 8px; aspect-ratio: 16/9; object-fit: cover;">
-                        <p style="color: white; margin-top: 8px; font-size: 14px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.2; height: 2.4em;">
+                        <img src="{thumbnail}" style="width: 100%; border-radius: 8px;">
+                        <p style="color: white; margin-top: 8px; font-size: 14px; text-align: center;">
                             {title}
                         </p>
                     </a>
-                </div>
-                ''',
-                unsafe_allow_html=True
-            )
-        
-        # Fechar container do carrossel
-        st.markdown('</div>', unsafe_allow_html=True)
+                    ''',
+                    unsafe_allow_html=True
+                )
 
 def main():
     # Carregar dados
