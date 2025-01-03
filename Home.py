@@ -149,8 +149,7 @@ def main():
                     
                     st.markdown(promo_html, unsafe_allow_html=True)
     
-    # Conteúdo principal
-    st.markdown("<h1 class='netflix-title'>Studyflix</h1>", unsafe_allow_html=True)
+    # Conteúdo principal - Removido título Studyflix que estava duplicado
     
     # Verificar categoria selecionada
     selected_category = st.session_state.get("selected_category", "vestibular")
