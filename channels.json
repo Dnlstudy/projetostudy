@@ -73,19 +73,19 @@
             "featured": false
         },
         {
-            "id": "UCT6Imb3GXhF8GmjpIk6y2lg",
-            "name": "Professor Ricardo Marcílio",
-            "subject": "Geografia",
-            "category": "vestibular",
-            "thumbnail": "https://yt3.ggpht.com/ytc/AIdro_nHxQFWxaZQSNDlzZcfRqAGXgWfBXZbNVfPQQ=s800-c-k-c0x00ffffff-no-rj",
-            "featured": false
-        },
-        {
             "id": "UC-1nFDK2XLiRhWnBatlgNFw",
             "name": "História Online",
             "subject": "História",
             "category": "vestibular",
             "thumbnail": "https://yt3.ggpht.com/ytc/AIdro_mgImGq87nhEw_lXTWVaD21xyJldp0XpCjsaNmLaN_JGbM=s800-c-k-c0x00ffffff-no-rj",
+            "featured": false
+        },
+        {
+            "id": "UCT6Imb3GXhF8GmjpIk6y2lg",
+            "name": "Professor Ricardo Marcílio",
+            "subject": "Geografia",
+            "category": "vestibular",
+            "thumbnail": "https://yt3.ggpht.com/OGDRSN1ZBXcz95r9CYWZCBTSymGkU4paW8NHPJp1Rek5Q9MkyF2hAxJbjRleeNetpFmLPEIskw=s800-c-k-c0x00ffffff-no-rj",
             "featured": false
         }
     ],
