@@ -6,7 +6,7 @@ import os
 from dotenv import load_dotenv
 from datetime import datetime
 import streamlit as st
-import subprocess
+from pymongo import MongoClient
 
 # Carrega as variáveis de ambiente
 load_dotenv()
@@ -14,120 +14,100 @@ load_dotenv()
 # Configurar o caminho base do projeto
 BASE_DIR = Path(__file__).parent.parent
 
+def get_database():
+    """
+    Conecta ao MongoDB Atlas usando as credenciais do Streamlit Secrets.
+    """
+    if 'mongo_client' not in st.session_state:
+        try:
+            mongo_uri = st.secrets["MONGODB_URI"]
+            client = MongoClient(mongo_uri)
+            st.session_state.mongo_client = client
+        except Exception as e:
+            st.error(f"Erro ao conectar com o banco de dados: {str(e)}")
+            return None
+    
+    return st.session_state.mongo_client.studyflix
+
 def load_channels():
     """
-    Carrega os dados dos canais do arquivo JSON.
-    Se o arquivo não existir, cria um novo com configurações padrão.
+    Carrega os dados dos canais do MongoDB.
+    Se não existir, cria com configurações padrão.
     """
-    # Use session state as a cache
-    if 'channels_data' in st.session_state:
-        return st.session_state.channels_data
-
     try:
-        channels_file = BASE_DIR / 'channels.json'
-        if not channels_file.exists():
-            raise FileNotFoundError
+        # Use session state as a cache
+        if 'channels_data' in st.session_state:
+            return st.session_state.channels_data
+
+        db = get_database()
+        if not db:
+            raise Exception("Não foi possível conectar ao banco de dados")
+
+        # Tenta carregar os dados
+        data = db.channels.find_one({"_id": "main"})
         
-        with open(channels_file, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            # Cache the data
-            st.session_state.channels_data = data
-            return data
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        st.warning("Criando novo arquivo de dados...")
-        # Criar novo arquivo com dados padrão
-        default_data = {
-            "featured_channels": [],
-            "categories": {
-                "vestibular": {
-                    "name": "Vestibular",
-                    "description": "Canais focados em preparação para vestibular"
+        if not data:
+            # Criar dados padrão
+            default_data = {
+                "_id": "main",
+                "featured_channels": [],
+                "categories": {
+                    "vestibular": {
+                        "name": "Vestibular",
+                        "description": "Canais focados em preparação para vestibular"
+                    },
+                    "informatica": {
+                        "name": "Informática",
+                        "description": "Canais sobre programação e computação"
+                    },
+                    "engenharia": {
+                        "name": "Engenharia",
+                        "description": "Canais sobre engenharia e tecnologia"
+                    }
                 },
-                "informatica": {
-                    "name": "Informática",
-                    "description": "Canais sobre programação e computação"
-                },
-                "engenharia": {
-                    "name": "Engenharia",
-                    "description": "Canais sobre engenharia e tecnologia"
+                "banners": {
+                    "cover": "",
+                    "promotional": []
                 }
-            },
-            "banners": {
-                "cover": "",
-                "promotional": []
             }
-        }
-        save_channels(default_data)
-        st.session_state.channels_data = default_data
-        return default_data
+            db.channels.insert_one(default_data)
+            st.session_state.channels_data = default_data
+            return default_data
+
+        # Remove o _id do MongoDB antes de retornar
+        if "_id" in data:
+            del data["_id"]
+        
+        st.session_state.channels_data = data
+        return data
+
     except Exception as e:
         st.error(f"Erro ao carregar dados: {str(e)}")
         return None
 
 def save_channels(channels_data):
     """
-    Salva os dados dos canais no arquivo JSON.
+    Salva os dados dos canais no MongoDB.
     """
     try:
-        backup_file = BASE_DIR / 'channels.json.backup'
-        channels_file = BASE_DIR / 'channels.json'
+        db = get_database()
+        if not db:
+            raise Exception("Não foi possível conectar ao banco de dados")
 
-        # Criar backup antes de salvar
-        if channels_file.exists():
-            with open(channels_file, 'r', encoding='utf-8') as f:
-                with open(backup_file, 'w', encoding='utf-8') as backup:
-                    backup.write(f.read())
+        # Adiciona o _id para o MongoDB
+        data_to_save = channels_data.copy()
+        data_to_save["_id"] = "main"
 
-        # Salvar novos dados
-        with open(channels_file, 'w', encoding='utf-8') as f:
-            json.dump(channels_data, f, indent=4, ensure_ascii=False)
+        # Salva no MongoDB
+        db.channels.replace_one({"_id": "main"}, data_to_save, upsert=True)
         
-        # Update session state cache
+        # Atualiza o cache
         st.session_state.channels_data = channels_data
         
-        # Verificar se os dados foram salvos corretamente
-        with open(channels_file, 'r', encoding='utf-8') as f:
-            saved_data = json.load(f)
-            if saved_data != channels_data:
-                raise ValueError("Verificação de dados falhou após salvar")
+        st.success("Dados salvos com sucesso!")
         
-        # Fazer push das alterações para o GitHub
-        if git_push_changes('channels.json', 'update: atualização automática dos dados dos canais'):
-            st.success("Alterações salvas e enviadas para o GitHub")
-        else:
-            st.warning("Alterações salvas localmente, mas não foi possível enviar para o GitHub")
-                
     except Exception as e:
         st.error(f"Erro ao salvar dados: {str(e)}")
-        # Tentar restaurar do backup se houver erro
-        if backup_file.exists():
-            try:
-                with open(backup_file, 'r', encoding='utf-8') as backup:
-                    backup_data = json.load(backup)
-                with open(channels_file, 'w', encoding='utf-8') as f:
-                    json.dump(backup_data, f, indent=4, ensure_ascii=False)
-                st.session_state.channels_data = backup_data
-                st.warning("Dados restaurados do backup após erro ao salvar")
-            except Exception as backup_error:
-                st.error(f"Erro ao restaurar backup: {str(backup_error)}")
-
-def git_push_changes(file_path, commit_message):
-    """
-    Faz commit e push das alterações no arquivo para o GitHub.
-    """
-    try:
-        # Configura o git com as credenciais
-        subprocess.run(['git', 'config', 'user.email', st.secrets["GIT_EMAIL"]], cwd=BASE_DIR)
-        subprocess.run(['git', 'config', 'user.name', st.secrets["GIT_USERNAME"]], cwd=BASE_DIR)
-        
-        # Add, commit e push
-        subprocess.run(['git', 'add', file_path], cwd=BASE_DIR)
-        subprocess.run(['git', 'commit', '-m', commit_message], cwd=BASE_DIR)
-        subprocess.run(['git', 'push', 'origin', 'master'], cwd=BASE_DIR)
-        return True
-    except Exception as e:
-        st.error(f"Erro ao fazer push para o GitHub: {str(e)}")
-        return False
 
 def verify_admin_credentials(username, password):
     """
@@ -163,3 +143,21 @@ def validate_session_token(token):
     # Atualiza o timestamp da última atividade
     st.session_state.admin_session['last_activity'] = datetime.now().timestamp()
     return True
+
+def git_push_changes(file_path, commit_message):
+    """
+    Faz commit e push das alterações no arquivo para o GitHub.
+    """
+    try:
+        # Configura o git com as credenciais
+        subprocess.run(['git', 'config', 'user.email', st.secrets["GIT_EMAIL"]], cwd=BASE_DIR)
+        subprocess.run(['git', 'config', 'user.name', st.secrets["GIT_USERNAME"]], cwd=BASE_DIR)
+        
+        # Add, commit e push
+        subprocess.run(['git', 'add', file_path], cwd=BASE_DIR)
+        subprocess.run(['git', 'commit', '-m', commit_message], cwd=BASE_DIR)
+        subprocess.run(['git', 'push', 'origin', 'master'], cwd=BASE_DIR)
+        return True
+    except Exception as e:
+        st.error(f"Erro ao fazer push para o GitHub: {str(e)}")
+        return False
