@@ -77,6 +77,7 @@ def verify_session():
     return True
 
 def get_unique_subjects(channels_data):
+    """Retorna uma lista de matérias únicas dos canais existentes"""
     subjects = set()
     for channel in channels_data.get("featured_channels", []):
         if "subject" in channel:
@@ -167,12 +168,26 @@ def manage_categories():
 
 def manage_channels():
     st.header("Gerenciar Canais")
+    channels_data = load_channels()
     
     # Adicionar novo canal
     with st.form("add_channel"):
         st.subheader("Adicionar Novo Canal")
         channel_url = st.text_input("URL do Canal")
-        subject = st.text_input("Assunto/Matéria")
+        
+        # Opção para usar matéria existente ou nova
+        use_existing_subject = st.checkbox("Usar matéria existente")
+        
+        if use_existing_subject:
+            existing_subjects = get_unique_subjects(channels_data)
+            if existing_subjects:
+                subject = st.selectbox("Matéria", options=existing_subjects)
+            else:
+                st.warning("Nenhuma matéria cadastrada ainda")
+                subject = st.text_input("Nova Matéria")
+        else:
+            subject = st.text_input("Nova Matéria")
+            
         category = st.selectbox("Categoria", ["vestibular", "engenharia", "informatica"])
         is_featured = st.checkbox("Canal em Destaque?")
         
@@ -184,8 +199,6 @@ def manage_channels():
                     channel_info = get_channel_info(youtube, channel_id)
                     
                     if channel_info:
-                        channels_data = load_channels()
-                        
                         # Verificar se o canal já existe
                         existing_channels = [c for c in channels_data.get("featured_channels", []) 
                                           if c.get("id") == channel_id]
@@ -212,7 +225,7 @@ def manage_channels():
                     else:
                         st.error("Não foi possível obter informações do canal")
             else:
-                st.error("URL do canal e assunto são obrigatórios")
+                st.error("URL do canal e matéria são obrigatórios")
     
     # Editar/Remover canais existentes
     with st.expander("Editar/Remover Canais"):

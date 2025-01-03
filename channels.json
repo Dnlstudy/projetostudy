@@ -71,6 +71,14 @@
             "category": "informatica",
             "thumbnail": "https://yt3.ggpht.com/rjN39qOv_12y1dXmIRw5znhUz9jLKHjoja8kslVfA_BkdHZvpl7kIzDuvgPjxniwJNNKV2ON=s800-c-k-c0x00ffffff-no-rj",
             "featured": false
+        },
+        {
+            "id": "UCT6Imb3GXhF8GmjpIk6y2lg",
+            "name": "Professor Ricardo Marcílio",
+            "subject": "Matemática",
+            "category": "vestibular",
+            "thumbnail": "https://yt3.ggpht.com/ytc/AIdro_nHxQFWxaZQSNDlzZcfRqAGXgWfBXZbNVfPQQ=s800-c-k-c0x00ffffff-no-rj",
+            "featured": false
         }
     ],
     "banners": {
