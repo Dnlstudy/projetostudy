@@ -1,0 +1,85 @@
+{
+    "categories": {
+        "vestibular": {
+            "name": "Vestibular e ENEM",
+            "description": "Canais focados em preparação para vestibulares e ENEM",
+            "featured": false,
+            "channels": [
+                {
+                    "id": "UCNlkXScvDUJrGbN1r7jQbUA",
+                    "name": "Fisiquei",
+                    "subject": "Física",
+                    "thumbnail": "https://yt3.ggpht.com/vSNwRSudyi4ABD5zSOu66LsNKAwqTkYoZ-A5yvnUmmZ_L6UrgFpZ0SNawWAfJmzpUwaWqvjYRQ=s800-c-k-c0x00ffffff-no-rj",
+                    "featured": false
+                },
+                {
+                    "id": "UCzshJ2mSjxhqKFBUXqP49Uw",
+                    "name": "Professor Boaro",
+                    "subject": "Física",
+                    "thumbnail": "https://yt3.ggpht.com/ytc/AIdro_njeOvl0mY14UMfkzVWbFQTlsT7AnyjnaD2DXvGyi9GhpU=s800-c-k-c0x00ffffff-no-rj",
+                    "featured": false
+                },
+                {
+                    "id": "UCkD_O6F2yt97117PhrBxqYA",
+                    "name": "nerckie",
+                    "subject": "Matemática",
+                    "thumbnail": "https://yt3.ggpht.com/ytc/AIdro_lCbe0_g0QTO7IULObLRksgOjwNmnTbq27rEVIAr7NM-g=s800-c-k-c0x00ffffff-no-rj",
+                    "featured": false
+                },
+                {
+                    "id": "UCay3ZSetL1DJsMccvEaOQPQ",
+                    "name": "gusalberto8",
+                    "subject": "Matemática",
+                    "thumbnail": "https://yt3.ggpht.com/ytc/AIdro_mk3-mLcKZtviAJRdRzAHyCKqM4Syy5Yw88hxtTwLEqKA=s800-c-k-c0x00ffffff-no-rj",
+                    "featured": false
+                },
+                {
+                    "id": "UCSldlnRCAPVKxXbpmIBC2SA",
+                    "name": "Aprendendo Química - Prof. Alexandre Oliveira",
+                    "subject": "Química",
+                    "thumbnail": "https://yt3.ggpht.com/ytc/AIdro_k-gX_VGngqRcJLX3pqm_zsdjmZjUM-fRKK0TrZWIr8NA=s800-c-k-c0x00ffffff-no-rj",
+                    "featured": false
+                },
+                {
+                    "id": "UCs9MDpWjJ3HH34ivmbXvz_Q",
+                    "name": "Café com química - Prof Michel",
+                    "subject": "Química",
+                    "thumbnail": "https://yt3.ggpht.com/_idDYvyBk1aJWDz9b24m2GedRq8VCJKAjwcEhp4HQfzCVhb8ECv3B5uI9ravtPjRWMk2TQrY4A=s800-c-k-c0x00ffffff-no-rj",
+                    "featured": false
+                },
+                {
+                    "id": "UCD9M9CFhUR4WMxhD2W1SLKQ",
+                    "name": "O Professor Maxwell",
+                    "subject": "Matemática",
+                    "thumbnail": "https://yt3.ggpht.com/mrGZX392SQK9RpSnMCD2lwRvLiezxvaxwIGO4FnDnOyRnSNPkHPkesLBOoktAjLgzAVlaA8yhw=s800-c-k-c0x00ffffff-no-rj",
+                    "featured": false
+                },
+                {
+                    "id": "UCdrNJIAfB5ag3od5rg9Q_7w",
+                    "name": "Vogalizando a História",
+                    "subject": "História",
+                    "thumbnail": "https://yt3.ggpht.com/17c1G1kF1To7E1MNydZdCMcJ5thzq27xxnSTegilPVvsJcVPPAuQ9FZDM4GthQoLdGTpNv5xfg=s800-c-k-c0x00ffffff-no-rj",
+                    "featured": false
+                }
+            ]
+        },
+        "engenharia": {
+            "name": "Informática",
+            "description": "Canais focados em informática",
+            "featured": false,
+            "channels": [
+                {
+                    "id": "UCyHOBY6IDZF9zOKJPou2Rgg",
+                    "name": "Lucas Montano",
+                    "subject": "Dev em geral",
+                    "thumbnail": "https://yt3.ggpht.com/rjN39qOv_12y1dXmIRw5znhUz9jLKHjoja8kslVfA_BkdHZvpl7kIzDuvgPjxniwJNNKV2ON=s800-c-k-c0x00ffffff-no-rj",
+                    "featured": false
+                }
+            ]
+        }
+    },
+    "banners": {
+        "cover": "https://i.imgur.com/wOWQpXb.jpeg",
+        "promotional": []
+    }
+}
