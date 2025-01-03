@@ -81,6 +81,20 @@
             "featured": false
         }
     ],
+    "categories": {
+        "vestibular": {
+            "name": "Vestibular",
+            "description": "Canais focados em preparação para vestibular"
+        },
+        "informatica": {
+            "name": "Informática",
+            "description": "Canais sobre programação e computação"
+        },
+        "engenharia": {
+            "name": "Engenharia",
+            "description": "Canais sobre engenharia e tecnologia"
+        }
+    },
     "banners": {
         "cover": "https://i.imgur.com/wOWQpXb.jpeg",
         "promotional": []
