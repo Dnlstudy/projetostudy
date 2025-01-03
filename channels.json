@@ -108,7 +108,10 @@
         }
     },
     "banners": {
-        "cover": "https://i.imgur.com/wOWQpXb.jpeg",
+        "cover": {
+            "url": "https://i.imgur.com/wOWQpXb.jpeg",
+            "link": "https://studyflix.streamlit.app/"
+        },
         "promotional": []
     }
 }
