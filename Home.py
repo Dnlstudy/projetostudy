@@ -138,11 +138,24 @@ def display_channels(channels_data):
                 transform: scale(1.05);
             }
             
-            .channel-thumbnail {
+            .thumbnail-container {
+                position: relative;
                 width: 100%;
-                aspect-ratio: 16/9;
-                object-fit: cover;
+                padding-top: 56.25%; /* Mantém proporção 16:9 */
                 border-radius: 12px;
+                overflow: hidden;
+                background: #141414;
+            }
+            
+            .channel-thumbnail {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 100%;
+                height: 100%;
+                object-fit: contain; /* Mostra imagem inteira */
+                background: #141414;
             }
             
             .channel-title {
@@ -179,7 +192,9 @@ def display_channels(channels_data):
             with cols[idx]:
                 st.markdown(f'''
                     <a href="https://youtube.com/channel/{channel["id"]}" class="channel-card" target="_blank">
-                        <img src="{channel["thumbnail"]}" alt="{channel["name"]}" class="channel-thumbnail">
+                        <div class="thumbnail-container">
+                            <img src="{channel["thumbnail"]}" alt="{channel["name"]}" class="channel-thumbnail">
+                        </div>
                         <div class="channel-title">{channel["name"]}</div>
                     </a>
                 ''', unsafe_allow_html=True)
