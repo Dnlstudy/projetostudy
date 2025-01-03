@@ -31,6 +31,7 @@ st.markdown("""
     border-radius: 5px;
     margin: 5px;
     transition: transform 0.2s;
+    cursor: pointer;
 }
 .channel-card:hover {
     transform: scale(1.05);
@@ -60,6 +61,11 @@ st.markdown("""
     background-color: #282828;
 }
 </style>
+<script>
+function openChannel(channelId) {
+    window.open('https://youtube.com/channel/' + channelId, '_blank');
+}
+</script>
 """, unsafe_allow_html=True)
 
 def show_category(category_id, category_data):
@@ -125,13 +131,11 @@ def main():
         for idx, channel in enumerate(channels):
             with cols[idx % 4]:
                 st.markdown(f"""
-                <div class='channel-card'>
+                <div class='channel-card' onclick="openChannel('{channel['id']}')">
                     <img src="{channel['thumbnail']}" style="width:100%; border-radius:5px;">
                     <h4 style="color:white; margin-top:10px;">{channel['name']}</h4>
                 </div>
                 """, unsafe_allow_html=True)
-                if st.button("Ver Canal", key=f"btn_{channel['id']}"):
-                    webbrowser.open(f"https://youtube.com/channel/{channel['id']}")
 
 if __name__ == "__main__":
     main()
