@@ -127,69 +127,6 @@ def display_channels(channels_data):
             channels_by_subject[subject] = []
         channels_by_subject[subject].append(channel)
     
-    # CSS para o carrossel
-    css = """
-    <style>
-        .scroll-container {
-            display: flex;
-            overflow-x: auto;
-            padding: 1rem 0;
-            gap: 1rem;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            scroll-behavior: smooth;
-            background-color: transparent !important;
-        }
-        
-        .scroll-container::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .channel-card {
-            flex: 0 0 auto;
-            width: 280px;
-            text-decoration: none;
-            background-color: transparent !important;
-        }
-        
-        .channel-card img {
-            width: 100%;
-            height: 157.5px; /* 280 * 9/16 */
-            border-radius: 8px;
-            object-fit: contain;
-            transition: transform 0.2s;
-            background-color: transparent !important;
-        }
-        
-        .channel-card:hover img {
-            transform: scale(1.05);
-        }
-        
-        .channel-title {
-            color: white;
-            margin-top: 8px;
-            font-size: 14px;
-            text-align: left;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            line-height: 1.2;
-            height: 2.4em;
-        }
-        
-        @media (max-width: 768px) {
-            .channel-card {
-                width: 200px;
-            }
-            .channel-card img {
-                height: 112.5px; /* 200 * 9/16 */
-            }
-        }
-    </style>
-    """
-    
     # Exibir canais agrupados por matéria em ordem alfabética
     for subject in sorted(channels_by_subject.keys()):
         channels = channels_by_subject[subject]
@@ -198,41 +135,92 @@ def display_channels(channels_data):
         st.markdown(f'<h3 class="subject-title">{subject}</h3>', unsafe_allow_html=True)
         
         # Calcular altura baseada no número de linhas do título (2) + altura da imagem + padding
-        img_height = 157.5  # Altura fixa da imagem
+        img_height = 280 * 9/16  # width * 9/16 para aspect ratio 16:9
         title_height = 2 * 14 * 1.2  # 2 linhas * font-size * line-height
         total_height = img_height + title_height + 40  # +40 para padding e margem
         
-        # Construir HTML do carrossel
-        html = f'''
-            {css}
-            <div style="background-color: transparent !important;">
-                <div class="scroll-container">
-        '''
-        
-        # Adicionar cards
-        for channel in channels:
-            channel_id = channel.get("id", "")
-            thumbnail = channel.get("thumbnail", "")
-            title = channel.get("name", "")
-            
-            html += f'''
-                <a href="https://youtube.com/channel/{channel_id}" target="_blank" class="channel-card">
-                    <img src="{thumbnail}" alt="{title}">
-                    <div class="channel-title">{title}</div>
-                </a>
-            '''
-        
-        html += '''
+        # HTML completo com iframe
+        html = f"""
+            <div style="width: 100%; height: {int(total_height)}px;">
+                <iframe srcdoc='
+                    <!DOCTYPE html>
+                    <html style="background: rgb(14, 17, 23);">
+                    <head>
+                        <style>
+                            body {{
+                                margin: 0;
+                                padding: 0;
+                                background: rgb(14, 17, 23);
+                                overflow-x: auto;
+                                overflow-y: hidden;
+                            }}
+                            .scroll-container {{
+                                display: flex;
+                                gap: 1rem;
+                                padding: 1rem 0;
+                                overflow-x: auto;
+                                scroll-behavior: smooth;
+                                scrollbar-width: none;
+                            }}
+                            .scroll-container::-webkit-scrollbar {{
+                                display: none;
+                            }}
+                            .channel-card {{
+                                flex: 0 0 auto;
+                                width: 280px;
+                                text-decoration: none;
+                            }}
+                            .channel-card img {{
+                                width: 100%;
+                                border-radius: 8px;
+                                aspect-ratio: 16/9;
+                                object-fit: contain;
+                                transition: transform 0.2s;
+                            }}
+                            .channel-card:hover img {{
+                                transform: scale(1.05);
+                            }}
+                            .channel-title {{
+                                color: white;
+                                margin-top: 8px;
+                                font-size: 14px;
+                                text-align: left;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                display: -webkit-box;
+                                -webkit-line-clamp: 2;
+                                -webkit-box-orient: vertical;
+                                line-height: 1.2;
+                                height: 2.4em;
+                            }}
+                            @media (max-width: 768px) {{
+                                .channel-card {{
+                                    width: 200px;
+                                }}
+                            }}
+                        </style>
+                    </head>
+                    <body>
+                        <div class="scroll-container">
+                ' 
+                style="width: 100%; height: 100%; border: none; background: rgb(14, 17, 23);"
+                >
+                    {" ".join([f'''
+                        <a href="https://youtube.com/channel/{channel["id"]}" target="_blank" class="channel-card">
+                            <img src="{channel["thumbnail"]}" alt="{channel["name"]}">
+                            <div class="channel-title">{channel["name"]}</div>
+                        </a>
+                    ''' for channel in channels])}
                 </div>
+                </body>
+                </html>
+                '
+            ></iframe>
             </div>
-        '''
+        """
         
-        # Renderizar usando components.html com altura calculada
-        st.components.v1.html(
-            html,
-            height=int(total_height),
-            scrolling=False
-        )
+        # Renderizar usando components.html
+        st.components.v1.html(html, height=int(total_height))
 
 def main():
     # Carregar dados
