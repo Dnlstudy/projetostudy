@@ -112,6 +112,7 @@ def display_channels(channels_data):
             scrollbar-width: none;
             -ms-overflow-style: none;
             scroll-behavior: smooth;
+            background: transparent !important;
         }
         
         .scroll-container::-webkit-scrollbar {
@@ -122,6 +123,7 @@ def display_channels(channels_data):
             flex: 0 0 auto;
             width: 200px;
             text-decoration: none;
+            background: transparent !important;
         }
         
         .channel-card img {
@@ -155,6 +157,11 @@ def display_channels(channels_data):
                 width: 160px;
             }
         }
+
+        /* Remove fundo branco do iframe */
+        iframe {
+            background: transparent !important;
+        }
     </style>
     """
     
@@ -164,6 +171,11 @@ def display_channels(channels_data):
         
         # Título da matéria
         st.markdown(f'<h3 class="subject-title">{subject}</h3>', unsafe_allow_html=True)
+        
+        # Calcular altura baseada no número de linhas do título (2) + altura da imagem + padding
+        img_height = 200 * 9/16  # width * 9/16 para aspect ratio 16:9
+        title_height = 2 * 14 * 1.2  # 2 linhas * font-size * line-height
+        total_height = img_height + title_height + 40  # +40 para padding e margem
         
         # Construir HTML do carrossel
         html = css + '<div class="scroll-container">'
@@ -183,8 +195,8 @@ def display_channels(channels_data):
         
         html += '</div>'
         
-        # Renderizar usando components.html
-        st.components.v1.html(html, height=300)
+        # Renderizar usando components.html com altura calculada
+        st.components.v1.html(html, height=int(total_height), scrolling=True)
 
 def main():
     # Carregar dados
