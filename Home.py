@@ -93,6 +93,27 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def display_channels(channels_data):
+    # Remove padding padrão do Streamlit
+    st.markdown("""
+        <style>
+            .element-container {
+                padding: 0 !important;
+            }
+            .stMarkdown {
+                background: transparent !important;
+            }
+            div[data-testid="stHorizontalBlock"] {
+                background: transparent !important;
+            }
+            iframe {
+                background: transparent !important;
+            }
+            body {
+                background: transparent !important;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+    
     # Agrupar canais por matéria
     channels_by_subject = {}
     for channel in channels_data.get("featured_channels", []):
@@ -121,7 +142,7 @@ def display_channels(channels_data):
         
         .channel-card {
             flex: 0 0 auto;
-            width: 200px;
+            width: 280px;
             text-decoration: none;
             background: transparent !important;
         }
@@ -154,13 +175,8 @@ def display_channels(channels_data):
         
         @media (max-width: 768px) {
             .channel-card {
-                width: 160px;
+                width: 200px;
             }
-        }
-
-        /* Remove fundo branco do iframe */
-        iframe {
-            background: transparent !important;
         }
     </style>
     """
@@ -173,12 +189,16 @@ def display_channels(channels_data):
         st.markdown(f'<h3 class="subject-title">{subject}</h3>', unsafe_allow_html=True)
         
         # Calcular altura baseada no número de linhas do título (2) + altura da imagem + padding
-        img_height = 200 * 9/16  # width * 9/16 para aspect ratio 16:9
+        img_height = 280 * 9/16  # width * 9/16 para aspect ratio 16:9
         title_height = 2 * 14 * 1.2  # 2 linhas * font-size * line-height
         total_height = img_height + title_height + 40  # +40 para padding e margem
         
         # Construir HTML do carrossel
-        html = css + '<div class="scroll-container">'
+        html = f'''
+            {css}
+            <div style="background: transparent !important;">
+                <div class="scroll-container">
+        '''
         
         # Adicionar cards
         for channel in channels:
@@ -193,10 +213,13 @@ def display_channels(channels_data):
                 </a>
             '''
         
-        html += '</div>'
+        html += '''
+                </div>
+            </div>
+        '''
         
-        # Renderizar usando components.html com altura calculada
-        st.components.v1.html(html, height=int(total_height), scrolling=True)
+        # Renderizar usando components.html com altura calculada e sem scrolling
+        st.components.v1.html(html, height=int(total_height))
 
 def main():
     # Carregar dados
