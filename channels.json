@@ -143,6 +143,22 @@
             "category": "vestibular",
             "thumbnail": "https://yt3.ggpht.com/TYM9HVuzk18K-GEej5K9ZJ1qD2Vna4Ekrz5MIgShh732crjqE-cG73o0l6sfqaWpPKdHhv5kHA=s800-c-k-c0x00ffffff-no-rj",
             "featured": false
+        },
+        {
+            "id": "UCcWswcTUMCIqKq2qZKyCcqQ",
+            "name": "Professor Dorival Filho",
+            "subject": "Biologia",
+            "category": "vestibular",
+            "thumbnail": "https://yt3.ggpht.com/FOekNBoN-uC0oabo4BNvETiB0pPd_yvkP5K3-KLQBMYMpp34O6aiD27Jy1VGxIHu9Dbvv7DEeQ=s800-c-k-c0x00ffffff-no-rj",
+            "featured": false
+        },
+        {
+            "id": "UCu8lEv0rJy2VpMXeJAltlEA",
+            "name": "omatematico.com",
+            "subject": "Pré-Cálculo / Cálculo",
+            "category": "mat",
+            "thumbnail": "https://yt3.ggpht.com/ytc/AIdro_kuCpxK6zzuZ8RxysdGts4N-vKwfQ78_5TlDoK_RZoSDuY_=s800-c-k-c0x00ffffff-no-rj",
+            "featured": false
         }
     ],
     "categories": {
@@ -153,6 +169,10 @@
         "informatica": {
             "name": "Informática",
             "description": "Canais sobre programação e computação"
+        },
+        "mat": {
+            "name": "Matemática - Ensino Superior",
+            "description": "Canais focados em matemática para Ensino Superior"
         }
     },
     "banners": {
