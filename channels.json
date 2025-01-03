@@ -205,7 +205,7 @@
             "name": "Se liga nessa História",
             "subject": "História",
             "category": "vestibular",
-            "thumbnail": "https://https://yt3.googleusercontent.com/ytc/AIdro_nLj3YzVJAb6_3BKR3FESm7wN_uHwOO3xHyHb2JQRhG8Yo=s160-c-k-c0x00ffffff-no-rj",
+            "thumbnail": "https://yt3.googleusercontent.com/ytc/AIdro_nLj3YzVJAb6_3BKR3FESm7wN_uHwOO3xHyHb2JQRhG8Yo=s160-c-k-c0x00ffffff-no-rj",
             "featured": false
         },
         {
@@ -214,6 +214,14 @@
             "subject": "Biologia",
             "category": "vestibular",
             "thumbnail": "https://yt3.ggpht.com/RBJdP90PrRiYDxg6AZdTxsUCjlaDmCKrOJ572hZI9vRWFhqzjIT3FFX03EDFbB70YwHGzgXU=s800-c-k-c0x00ffffff-no-rj",
+            "featured": false
+        },
+        {
+            "id": "UCSdrRq5JGx2U0jAFjmKF0aA",
+            "name": "Física com Douglas",
+            "subject": "Física",
+            "category": "vestibular",
+            "thumbnail": "https://yt3.ggpht.com/_ylNGO2Yk9hgPQMp1iSkFXneQqB9w7GAi7KPyjXk5BOuW9ko-zxQDvAm5xXqLi9NakTcyJtO0w=s800-c-k-c0x00ffffff-no-rj",
             "featured": false
         }
     ],
