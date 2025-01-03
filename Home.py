@@ -104,43 +104,37 @@ def display_channels(channels_data):
     # CSS para o carrossel
     st.write("""
         <style>
-            .subject-container {
-                margin: 2rem 0;
-            }
-            
             .subject-title {
                 color: #E50914;
                 font-size: 24px;
                 font-weight: bold;
-                margin-bottom: 1rem;
+                margin: 24px 0 16px 0;
             }
             
-            .carousel {
-                position: relative;
-                width: 100%;
-                padding: 0 2rem;
+            .carousel-container {
+                margin: 20px 0;
             }
             
-            .channel-list {
+            .channel-row {
                 display: flex;
                 overflow-x: auto;
-                scroll-behavior: smooth;
-                gap: 1rem;
-                padding: 1rem 0;
-                scrollbar-width: none;
-                -ms-overflow-style: none;
+                gap: 16px;
+                padding: 16px 0;
+                scrollbar-width: none;  /* Firefox */
+                -ms-overflow-style: none;  /* IE and Edge */
             }
             
-            .channel-list::-webkit-scrollbar {
-                display: none;
+            .channel-row::-webkit-scrollbar {
+                display: none;  /* Chrome, Safari, Opera */
             }
             
             .channel-card {
-                flex: 0 0 280px;
+                flex: 0 0 auto;
+                width: 280px;
                 text-decoration: none;
                 background: rgba(255, 255, 255, 0.05);
                 border-radius: 8px;
-                padding: 0.5rem;
+                overflow: hidden;
                 transition: transform 0.2s;
             }
             
@@ -153,61 +147,21 @@ def display_channels(channels_data):
                 width: 100%;
                 aspect-ratio: 16/9;
                 object-fit: cover;
-                border-radius: 4px;
             }
             
             .channel-title {
                 color: white;
+                padding: 12px;
                 font-size: 14px;
-                margin-top: 0.5rem;
                 text-align: center;
-            }
-            
-            .nav-button {
-                position: absolute;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 40px;
-                height: 40px;
-                background: rgba(229, 9, 20, 0.9);
-                border: none;
-                border-radius: 50%;
-                color: white;
-                font-size: 20px;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 10;
-                transition: background-color 0.2s;
-            }
-            
-            .nav-button:hover {
-                background: rgb(229, 9, 20);
-            }
-            
-            .nav-prev {
-                left: 0;
-            }
-            
-            .nav-next {
-                right: 0;
             }
             
             @media (max-width: 768px) {
                 .channel-card {
-                    flex: 0 0 240px;
+                    width: 240px;
                 }
             }
         </style>
-        
-        <script>
-            function scrollCarousel(containerId, direction) {
-                const container = document.getElementById(containerId);
-                const scrollAmount = container.offsetWidth * (direction === 'next' ? 0.8 : -0.8);
-                container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-            }
-        </script>
     """, unsafe_allow_html=True)
     
     # Exibir canais agrupados por matéria em ordem alfabética
@@ -216,11 +170,9 @@ def display_channels(channels_data):
         
         # Container da matéria
         st.write(f'''
-            <div class="subject-container">
+            <div class="carousel-container">
                 <h3 class="subject-title">{subject}</h3>
-                <div class="carousel">
-                    <button class="nav-button nav-prev" onclick="scrollCarousel('carousel-{subject.lower()}', 'prev')">‹</button>
-                    <div class="channel-list" id="carousel-{subject.lower()}">
+                <div class="channel-row">
         ''', unsafe_allow_html=True)
         
         # Renderizar cards dos canais
@@ -232,10 +184,8 @@ def display_channels(channels_data):
                 </a>
             ''', unsafe_allow_html=True)
         
-        # Fechar containers
+        # Fechar container
         st.write('''
-                    </div>
-                    <button class="nav-button nav-next" onclick="scrollCarousel('carousel-{subject.lower()}', 'next')">›</button>
                 </div>
             </div>
         ''', unsafe_allow_html=True)
