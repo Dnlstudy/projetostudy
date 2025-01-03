@@ -139,6 +139,16 @@ def display_channels(channels_data):
         title_height = 2 * 14 * 1.2  # 2 linhas * font-size * line-height
         total_height = img_height + title_height + 40  # +40 para padding e margem
         
+        # Construir os cards primeiro
+        cards_html = ""
+        for channel in channels:
+            cards_html += f'''
+                <a href="https://youtube.com/channel/{channel["id"]}" target="_blank" class="channel-card">
+                    <img src="{channel["thumbnail"]}" alt="{channel["name"]}">
+                    <div class="channel-title">{channel["name"]}</div>
+                </a>
+            '''
+        
         # HTML completo com iframe
         html = f"""
             <div style="width: 100%; height: {int(total_height)}px;">
@@ -202,20 +212,14 @@ def display_channels(channels_data):
                     </head>
                     <body>
                         <div class="scroll-container">
+                            {cards_html}
+                        </div>
+                    </body>
+                    </html>
                 ' 
                 style="width: 100%; height: 100%; border: none; background: rgb(14, 17, 23);"
                 >
-                    {" ".join([f'''
-                        <a href="https://youtube.com/channel/{channel["id"]}" target="_blank" class="channel-card">
-                            <img src="{channel["thumbnail"]}" alt="{channel["name"]}">
-                            <div class="channel-title">{channel["name"]}</div>
-                        </a>
-                    ''' for channel in channels])}
-                </div>
-                </body>
-                </html>
-                '
-            ></iframe>
+                </iframe>
             </div>
         """
         
