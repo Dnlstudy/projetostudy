@@ -175,6 +175,14 @@
             "category": "informatica",
             "thumbnail": "https://yt3.googleusercontent.com/BvU4qR3blBnq00IbE4yg37Tk_GqKU7pHkLMBdUZal877zyRzvyHyctMR_1ioyNla11zH5hxNcQE=s160-c-k-c0x00ffffff-no-rj",
             "featured": false
+        },
+        {
+            "id": "UCvMdTwY9FYB3cskV9f9djoQ",
+            "name": "Matemática no Papel",
+            "subject": "Matemática",
+            "category": "vestibular",
+            "thumbnail": "https://yt3.ggpht.com/dgvCN-WC1qncrESxeFzn61NTdXAua8Oh_JoEQTzNZg9X9KS0xh8rWzSg6i1t_4uB4WTI34qQxjQ=s800-c-k-c0x00ffffff-no-rj",
+            "featured": false
         }
     ],
     "categories": {
