@@ -149,17 +149,17 @@ def main():
         "vestibular": {
             "name": "Vestibular",
             "description": "Canais focados em preparação para vestibular",
-            "channels": [ch for ch in data.get("featured_channels", []) if ch.get("subject") in ["Física", "Química", "Matemática", "História"]]
+            "channels": [ch for ch in data.get("featured_channels", []) if ch.get("category") == "vestibular"]
         },
         "engenharia": {
             "name": "Engenharia",
             "description": "Canais sobre engenharia e tecnologia",
-            "channels": [ch for ch in data.get("featured_channels", []) if ch.get("subject") in ["Física", "Matemática"]]
+            "channels": []  # Por enquanto não temos canais nesta categoria
         },
         "informatica": {
             "name": "Informática",
             "description": "Canais sobre programação e computação",
-            "channels": [ch for ch in data.get("featured_channels", []) if ch.get("subject") == "Dev em geral"]
+            "channels": [ch for ch in data.get("featured_channels", []) if ch.get("category") == "informatica"]
         }
     }
     
