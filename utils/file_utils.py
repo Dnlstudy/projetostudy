@@ -18,10 +18,22 @@ def load_channels():
     Carrega os dados dos canais do arquivo JSON.
     Se o arquivo não existir, cria um novo com configurações padrão.
     """
+    # Use session state as a cache
+    if 'channels_data' in st.session_state:
+        return st.session_state.channels_data
+
     try:
-        with open(BASE_DIR / 'channels.json', 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
+        channels_file = BASE_DIR / 'channels.json'
+        if not channels_file.exists():
+            raise FileNotFoundError
+        
+        with open(channels_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            # Cache the data
+            st.session_state.channels_data = data
+            return data
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        st.warning("Criando novo arquivo de dados...")
         # Criar novo arquivo com dados padrão
         default_data = {
             "featured_channels": [],
@@ -45,24 +57,52 @@ def load_channels():
             }
         }
         save_channels(default_data)
+        st.session_state.channels_data = default_data
         return default_data
+    except Exception as e:
+        st.error(f"Erro ao carregar dados: {str(e)}")
+        return None
 
 def save_channels(channels_data):
     """
     Salva os dados dos canais no arquivo JSON.
     """
-    backup_file = BASE_DIR / 'channels.json.backup'
-    channels_file = BASE_DIR / 'channels.json'
+    try:
+        backup_file = BASE_DIR / 'channels.json.backup'
+        channels_file = BASE_DIR / 'channels.json'
 
-    # Criar backup antes de salvar
-    if channels_file.exists():
+        # Criar backup antes de salvar
+        if channels_file.exists():
+            with open(channels_file, 'r', encoding='utf-8') as f:
+                with open(backup_file, 'w', encoding='utf-8') as backup:
+                    backup.write(f.read())
+
+        # Salvar novos dados
+        with open(channels_file, 'w', encoding='utf-8') as f:
+            json.dump(channels_data, f, indent=4, ensure_ascii=False)
+        
+        # Update session state cache
+        st.session_state.channels_data = channels_data
+        
+        # Verificar se os dados foram salvos corretamente
         with open(channels_file, 'r', encoding='utf-8') as f:
-            with open(backup_file, 'w', encoding='utf-8') as backup:
-                backup.write(f.read())
-
-    # Salvar novos dados
-    with open(channels_file, 'w', encoding='utf-8') as f:
-        json.dump(channels_data, f, indent=4, ensure_ascii=False)
+            saved_data = json.load(f)
+            if saved_data != channels_data:
+                raise ValueError("Verificação de dados falhou após salvar")
+                
+    except Exception as e:
+        st.error(f"Erro ao salvar dados: {str(e)}")
+        # Tentar restaurar do backup se houver erro
+        if backup_file.exists():
+            try:
+                with open(backup_file, 'r', encoding='utf-8') as backup:
+                    backup_data = json.load(backup)
+                with open(channels_file, 'w', encoding='utf-8') as f:
+                    json.dump(backup_data, f, indent=4, ensure_ascii=False)
+                st.session_state.channels_data = backup_data
+                st.warning("Dados restaurados do backup após erro ao salvar")
+            except Exception as backup_error:
+                st.error(f"Erro ao restaurar backup: {str(backup_error)}")
 
 def verify_admin_credentials(username, password):
     """
