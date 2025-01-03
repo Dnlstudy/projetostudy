@@ -103,22 +103,26 @@ def manage_categories():
         }
     }
     
-    st.info("As categorias são pré-definidas para manter a organização do site.")
-    
     # Mostrar canais por categoria
     for cat_id, category in AVAILABLE_CATEGORIES.items():
-        st.subheader(f"{category['name']}")
-        st.write(category['description'])
-        
-        # Filtrar canais desta categoria
-        category_channels = [ch for ch in channels_data.get("featured_channels", []) 
-                           if ch.get("category") == cat_id]
-        
-        if category_channels:
-            for channel in category_channels:
-                st.write(f"- {channel['name']} ({channel['subject']})")
-        else:
-            st.write("Nenhum canal nesta categoria.")
+        with st.expander(f"{category['name']} - {category['description']}"):
+            # Filtrar canais desta categoria
+            category_channels = [ch for ch in channels_data.get("featured_channels", []) 
+                               if ch.get("category") == cat_id]
+            
+            if category_channels:
+                for channel in category_channels:
+                    col1, col2 = st.columns([3, 1])
+                    with col1:
+                        st.write(f"**{channel['name']}** ({channel['subject']})")
+                    with col2:
+                        if st.button("Remover", key=f"remove_{channel['id']}"):
+                            channels_data["featured_channels"].remove(channel)
+                            save_channels(channels_data)
+                            st.success("Canal removido com sucesso!")
+                            st.rerun()
+            else:
+                st.info("Nenhum canal nesta categoria.")
 
 def manage_channels():
     st.header("Gerenciar Canais")

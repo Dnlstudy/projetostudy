@@ -21,12 +21,20 @@ def get_youtube_client():
 def get_channel_info(youtube, channel_id):
     try:
         request = youtube.channels().list(
-            part="snippet",
+            part="snippet,statistics",
             id=channel_id,
             fields="items(snippet(title,thumbnails/high))"
         )
         response = request.execute()
-        return response.get('items', [])[0] if response.get('items') else None
+        
+        if not response.get('items'):
+            return None
+            
+        channel_data = response['items'][0]
+        return {
+            "title": channel_data['snippet']['title'],
+            "thumbnail": channel_data['snippet']['thumbnails']['high']['url']
+        }
     except Exception as e:
         st.error(f"Erro ao buscar informações do canal: {str(e)}")
         return None
@@ -34,45 +42,35 @@ def get_channel_info(youtube, channel_id):
 def extract_channel_id(url):
     """Extrai o ID do canal de diferentes formatos de URL do YouTube"""
     try:
-        url = url.split('?si=')[0]
-        if '@' in url:
-            # Para URLs no formato @nomedocanal
-            channel_handle = url.split('@')[-1].split('/')[0]
-            youtube = get_youtube_client()
-            
-            # Buscar canal pelo handle
-            request = youtube.search().list(
-                part="snippet",
-                q=f"@{channel_handle}",
-                type="channel",
-                maxResults=1,
-                fields="items(snippet/channelId)"
-            )
-            response = request.execute()
-            
-            if response.get('items'):
-                return response['items'][0]['snippet']['channelId']
-            return None
-            
-        elif 'youtube.com/channel/' in url:
+        # Remover parâmetros da URL
+        url = url.split('?')[0].strip('/')
+        
+        if '/channel/' in url:
             # Para URLs no formato youtube.com/channel/ID
-            return url.split('youtube.com/channel/')[-1].split('/')[0]
-        elif 'youtube.com/c/' in url:
-            # Para URLs personalizadas, precisamos buscar o ID
-            custom_name = url.split('youtube.com/c/')[-1].split('/')[0]
+            return url.split('/channel/')[-1]
+        elif '/c/' in url or '/user/' in url or '@' in url:
+            # Para URLs personalizadas ou com handle (@), precisamos buscar o ID
             youtube = get_youtube_client()
             
+            # Se for uma URL com @, extrair o handle
+            if '@' in url:
+                channel_handle = '@' + url.split('@')[-1].split('/')[0]
+            else:
+                # Se for /c/ ou /user/, extrair o nome personalizado
+                channel_handle = url.split('/')[-1]
+            
+            # Buscar canal
             request = youtube.search().list(
-                part="snippet",
-                q=custom_name,
+                part="id",
+                q=channel_handle,
                 type="channel",
-                maxResults=1,
-                fields="items(snippet/channelId)"
+                maxResults=1
             )
             response = request.execute()
             
             if response.get('items'):
-                return response['items'][0]['snippet']['channelId']
+                return response['items'][0]['id']['channelId']
+            
         return None
     except Exception as e:
         st.error(f"Erro ao extrair ID do canal: {str(e)}")
