@@ -20,16 +20,29 @@ def load_channels():
     """
     try:
         with open(BASE_DIR / 'channels.json', 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            return {
-                "featured_channels": data.get("featured_channels", []),
-                "banners": data.get("banners", {})
-            }
+            return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         # Criar novo arquivo com dados padrão
         default_data = {
             "featured_channels": [],
-            "banners": {}
+            "categories": {
+                "vestibular": {
+                    "name": "Vestibular",
+                    "description": "Canais focados em preparação para vestibular"
+                },
+                "informatica": {
+                    "name": "Informática",
+                    "description": "Canais sobre programação e computação"
+                },
+                "engenharia": {
+                    "name": "Engenharia",
+                    "description": "Canais sobre engenharia e tecnologia"
+                }
+            },
+            "banners": {
+                "cover": "",
+                "promotional": []
+            }
         }
         save_channels(default_data)
         return default_data
@@ -37,14 +50,7 @@ def load_channels():
 def save_channels(channels_data):
     """
     Salva os dados dos canais no arquivo JSON.
-    Remove qualquer credencial antes de salvar.
     """
-    # Garante que apenas dados seguros sejam salvos
-    safe_data = {
-        "featured_channels": channels_data.get("featured_channels", []),
-        "banners": channels_data.get("banners", {})
-    }
-
     backup_file = BASE_DIR / 'channels.json.backup'
     channels_file = BASE_DIR / 'channels.json'
 
@@ -56,7 +62,7 @@ def save_channels(channels_data):
 
     # Salvar novos dados
     with open(channels_file, 'w', encoding='utf-8') as f:
-        json.dump(safe_data, f, indent=4, ensure_ascii=False)
+        json.dump(channels_data, f, indent=4, ensure_ascii=False)
 
 def verify_admin_credentials(username, password):
     """
