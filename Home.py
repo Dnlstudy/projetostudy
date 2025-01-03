@@ -105,26 +105,27 @@ def display_channels(channels_data):
     st.markdown("""
         <style>
             div[data-testid="stHorizontalBlock"] {
-                gap: 16px;
+                gap: 24px;
                 overflow-x: auto;
                 flex-wrap: nowrap;
-                padding: 16px 0;
+                padding: 20px 0;
             }
             
             .subject-title {
                 color: #E50914;
-                font-size: 24px;
+                font-size: 28px;
                 font-weight: bold;
-                margin: 24px 0 16px 0;
+                margin: 32px 0 20px 0;
             }
             
             .channel-card {
                 text-decoration: none;
                 background: rgba(255, 255, 255, 0.05);
-                border-radius: 8px;
+                border-radius: 12px;
                 overflow: hidden;
                 transition: transform 0.2s;
                 display: block;
+                min-width: 360px;
             }
             
             .channel-card:hover {
@@ -140,9 +141,20 @@ def display_channels(channels_data):
             
             .channel-title {
                 color: white;
-                padding: 12px;
-                font-size: 14px;
+                padding: 16px;
+                font-size: 16px;
                 text-align: center;
+                font-weight: 500;
+            }
+            
+            @media (max-width: 768px) {
+                .channel-card {
+                    min-width: 300px;
+                }
+                
+                .subject-title {
+                    font-size: 24px;
+                }
             }
         </style>
     """, unsafe_allow_html=True)
