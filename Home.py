@@ -102,93 +102,83 @@ def display_channels(channels_data):
         channels_by_subject[subject].append(channel)
     
     # CSS para o carrossel
-    st.write("""
-        <style>
-            .subject-title {
-                color: #E50914;
-                font-size: 24px;
-                font-weight: bold;
-                margin: 24px 0 16px 0;
-            }
-            
-            .carousel-container {
-                margin: 20px 0;
-            }
-            
-            .channel-row {
-                display: flex;
-                overflow-x: auto;
-                gap: 16px;
-                padding: 16px 0;
-                scrollbar-width: none;  /* Firefox */
-                -ms-overflow-style: none;  /* IE and Edge */
-            }
-            
-            .channel-row::-webkit-scrollbar {
-                display: none;  /* Chrome, Safari, Opera */
-            }
-            
+    st.markdown("""
+    <style>
+        .subject-title {
+            color: #E50914;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 24px 0 16px 0;
+        }
+        
+        .channels-container {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 16px;
+            padding: 16px 0;
+            margin: 0 -16px;
+            scroll-behavior: smooth;
+        }
+        
+        .channel-card {
+            flex: 0 0 280px;
+            min-width: 280px;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+        
+        .channel-card:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .channel-card img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+        }
+        
+        .channel-title {
+            color: white;
+            padding: 12px;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
             .channel-card {
-                flex: 0 0 auto;
-                width: 280px;
-                text-decoration: none;
-                background: rgba(255, 255, 255, 0.05);
-                border-radius: 8px;
-                overflow: hidden;
-                transition: transform 0.2s;
+                flex: 0 0 240px;
+                min-width: 240px;
             }
-            
-            .channel-card:hover {
-                transform: scale(1.05);
-                background: rgba(255, 255, 255, 0.1);
-            }
-            
-            .channel-card img {
-                width: 100%;
-                aspect-ratio: 16/9;
-                object-fit: cover;
-            }
-            
-            .channel-title {
-                color: white;
-                padding: 12px;
-                font-size: 14px;
-                text-align: center;
-            }
-            
-            @media (max-width: 768px) {
-                .channel-card {
-                    width: 240px;
-                }
-            }
-        </style>
+        }
+    </style>
     """, unsafe_allow_html=True)
     
     # Exibir canais agrupados por matéria em ordem alfabética
     for subject in sorted(channels_by_subject.keys()):
         channels = channels_by_subject[subject]
         
-        # Container da matéria
-        st.write(f'''
-            <div class="carousel-container">
-                <h3 class="subject-title">{subject}</h3>
-                <div class="channel-row">
-        ''', unsafe_allow_html=True)
+        # Título da matéria
+        st.markdown(f'<h3 class="subject-title">{subject}</h3>', unsafe_allow_html=True)
         
-        # Renderizar cards dos canais
+        # Container dos canais
+        channel_html = '<div class="channels-container">'
+        
+        # Adicionar cards dos canais
         for channel in channels:
-            st.write(f'''
+            channel_html += f'''
                 <a href="https://youtube.com/channel/{channel['id']}" class="channel-card" target="_blank">
                     <img src="{channel['thumbnail']}" alt="{channel['name']}">
                     <div class="channel-title">{channel['name']}</div>
                 </a>
-            ''', unsafe_allow_html=True)
+            '''
         
-        # Fechar container
-        st.write('''
-                </div>
-            </div>
-        ''', unsafe_allow_html=True)
+        channel_html += '</div>'
+        st.markdown(channel_html, unsafe_allow_html=True)
 
 def main():
     # Carregar dados
