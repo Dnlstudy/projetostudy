@@ -88,9 +88,9 @@ def manage_categories():
     st.header("Gerenciar Categorias")
     channels_data = load_channels()
     
-    # Carregar categorias do state ou inicializar com padrão
-    if 'categories' not in st.session_state:
-        st.session_state.categories = {
+    # Inicializar categorias se não existirem
+    if "categories" not in channels_data:
+        channels_data["categories"] = {
             "vestibular": {
                 "name": "Vestibular",
                 "description": "Canais focados em preparação para vestibular"
@@ -102,8 +102,13 @@ def manage_categories():
             "informatica": {
                 "name": "Informática",
                 "description": "Canais sobre programação e computação"
+            },
+            "geografia": {
+                "name": "Geografia",
+                "description": "Canais sobre geografia e geopolítica"
             }
         }
+        save_channels(channels_data)
     
     # Adicionar nova categoria
     with st.expander("Adicionar Nova Categoria"):
@@ -114,11 +119,12 @@ def manage_categories():
             
             if st.form_submit_button("Adicionar Categoria"):
                 if cat_id and cat_name:
-                    if cat_id not in st.session_state.categories:
-                        st.session_state.categories[cat_id] = {
+                    if cat_id not in channels_data["categories"]:
+                        channels_data["categories"][cat_id] = {
                             "name": cat_name,
                             "description": cat_desc
                         }
+                        save_channels(channels_data)
                         st.success("Categoria adicionada com sucesso!")
                         st.rerun()
                     else:
@@ -127,9 +133,7 @@ def manage_categories():
                     st.error("ID e Nome são obrigatórios")
     
     # Mostrar e gerenciar categorias existentes
-    categories_to_remove = []  # Lista para armazenar categorias a serem removidas
-    
-    for cat_id, category in st.session_state.categories.items():
+    for cat_id, category in channels_data["categories"].items():
         with st.expander(f"{category['name']} - {category['description']}"):
             col1, col2 = st.columns([3, 1])
             
@@ -138,10 +142,11 @@ def manage_categories():
                 new_desc = st.text_area("Descrição", category["description"], key=f"desc_{cat_id}")
                 
                 if st.button("Salvar Alterações", key=f"save_{cat_id}"):
-                    st.session_state.categories[cat_id] = {
+                    channels_data["categories"][cat_id] = {
                         "name": new_name,
                         "description": new_desc
                     }
+                    save_channels(channels_data)
                     st.success("Alterações salvas!")
                     st.rerun()
             
@@ -156,7 +161,8 @@ def manage_categories():
                     if has_channels:
                         st.error("Não é possível remover uma categoria com canais. Remova os canais primeiro.")
                     else:
-                        categories_to_remove.append(cat_id)
+                        del channels_data["categories"][cat_id]
+                        save_channels(channels_data)
                         st.success("Categoria removida!")
                         st.rerun()
             
@@ -178,10 +184,6 @@ def manage_categories():
                             st.rerun()
             else:
                 st.info("Nenhum canal nesta categoria.")
-    
-    # Remover categorias marcadas para remoção
-    for cat_id in categories_to_remove:
-        del st.session_state.categories[cat_id]
 
 def manage_channels():
     st.header("Gerenciar Canais")
@@ -192,32 +194,32 @@ def manage_channels():
         st.subheader("Adicionar Novo Canal")
         channel_url = st.text_input("URL do Canal")
         
-        # Opção para usar matéria existente ou nova
-        use_existing_subject = st.checkbox("Usar matéria existente", key="use_existing_subject")
-        
         # Carregar matérias existentes
         existing_subjects = get_unique_subjects(channels_data)
         
-        if use_existing_subject and existing_subjects:
-            subject = st.selectbox(
-                "Matéria",
-                options=existing_subjects,
-                key="subject_select"
-            )
-        else:
-            if use_existing_subject:
-                st.info("Nenhuma matéria cadastrada ainda")
-            subject = st.text_input("Nova Matéria", key="new_subject")
+        # Opção para usar matéria existente
+        col1, col2 = st.columns(2)
+        with col1:
+            use_existing = st.checkbox("Usar matéria existente", key="use_existing")
         
+        # Campo de matéria
+        if use_existing and existing_subjects:
+            subject = st.selectbox("Selecione a matéria", options=existing_subjects)
+        else:
+            if use_existing:
+                st.info("Nenhuma matéria cadastrada ainda")
+            subject = st.text_input("Nova matéria")
+        
+        # Selecionar categoria
         category = st.selectbox(
             "Categoria",
-            options=list(st.session_state.categories.keys()),
-            format_func=lambda x: st.session_state.categories[x]["name"]
+            options=list(channels_data["categories"].keys()),
+            format_func=lambda x: channels_data["categories"][x]["name"]
         )
+        
         is_featured = st.checkbox("Canal em Destaque?")
         
-        submitted = st.form_submit_button("Adicionar Canal")
-        if submitted:
+        if st.form_submit_button("Adicionar Canal"):
             if channel_url and subject:
                 channel_id = extract_channel_id(channel_url)
                 if channel_id:
@@ -249,9 +251,9 @@ def manage_channels():
                         else:
                             st.error("Este canal já está cadastrado!")
                     else:
-                        st.error("Não foi possível obter informações do canal. Verifique se a URL está correta.")
+                        st.error("Não foi possível obter informações do canal")
                 else:
-                    st.error("URL do canal inválida. Use o formato correto do YouTube (ex: https://www.youtube.com/@NomeDoCanal)")
+                    st.error("URL do canal inválida")
             else:
                 st.error("URL do canal e matéria são obrigatórios")
 
