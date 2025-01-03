@@ -233,10 +233,6 @@ def manage_channels():
     # Adicionar novo canal
     st.markdown("### Adicionar Novo Canal")
     
-    # Inicializar o state se necessário
-    if 'subject_type' not in st.session_state:
-        st.session_state.subject_type = 'existing'
-    
     with st.form("add_channel"):
         col1, col2 = st.columns(2)
         
@@ -263,18 +259,14 @@ def manage_channels():
             
             # Opção para usar matéria existente ou criar nova
             if existing_subjects:
-                cols = st.columns([1, 1])
-                with cols[0]:
-                    use_existing = st.radio(
-                        "Tipo de Matéria",
-                        ["Usar Existente", "Criar Nova"],
-                        index=0 if st.session_state.subject_type == 'existing' else 1,
-                        key="subject_type_radio",
-                        on_change=lambda: setattr(st.session_state, 'subject_type', 
-                                                'existing' if st.session_state.subject_type_radio == 'Usar Existente' else 'new')
-                    )
+                subject_type = st.radio(
+                    "Tipo de Matéria",
+                    ["Usar Existente", "Criar Nova"],
+                    horizontal=True,
+                    key="subject_type_radio"
+                )
                 
-                if st.session_state.subject_type == 'existing':
+                if subject_type == "Usar Existente":
                     subject = st.selectbox(
                         "Selecione a Matéria",
                         options=existing_subjects,
