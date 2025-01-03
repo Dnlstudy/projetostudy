@@ -87,133 +87,136 @@ def manage_categories():
     st.header("Gerenciar Categorias")
     channels_data = load_channels()
     
-    # Lista de categorias disponíveis
-    AVAILABLE_CATEGORIES = {
-        "vestibular": {
-            "name": "Vestibular",
-            "description": "Canais focados em preparação para vestibular"
-        },
-        "engenharia": {
-            "name": "Engenharia",
-            "description": "Canais sobre engenharia e tecnologia"
-        },
-        "informatica": {
-            "name": "Informática",
-            "description": "Canais sobre programação e computação"
-        }
-    }
-    
-    # Mostrar canais por categoria
-    for cat_id, category in AVAILABLE_CATEGORIES.items():
-        with st.expander(f"{category['name']} - {category['description']}"):
-            # Filtrar canais desta categoria
-            category_channels = [ch for ch in channels_data.get("featured_channels", []) 
-                               if ch.get("category") == cat_id]
+    # Adicionar nova categoria
+    with st.expander("Adicionar Nova Categoria"):
+        with st.form("new_category"):
+            cat_id = st.text_input("ID da Categoria (ex: engenharia)").lower().strip()
+            cat_name = st.text_input("Nome da Categoria")
+            cat_desc = st.text_area("Descrição")
             
-            if category_channels:
-                for channel in category_channels:
-                    col1, col2 = st.columns([3, 1])
-                    with col1:
-                        st.write(f"**{channel['name']}** ({channel['subject']})")
-                    with col2:
-                        if st.button("Remover", key=f"remove_{channel['id']}"):
-                            channels_data["featured_channels"].remove(channel)
-                            save_channels(channels_data)
-                            st.success("Canal removido com sucesso!")
-                            st.rerun()
-            else:
-                st.info("Nenhum canal nesta categoria.")
+            if st.form_submit_button("Adicionar Categoria"):
+                if cat_id and cat_name:
+                    # Verificar se a categoria já existe
+                    existing_categories = set()
+                    for channel in channels_data.get("featured_channels", []):
+                        if "category" in channel:
+                            existing_categories.add(channel["category"])
+                    
+                    if cat_id not in existing_categories:
+                        st.success("Categoria adicionada com sucesso!")
+                        st.rerun()
+                    else:
+                        st.error("Já existe uma categoria com este ID")
+                else:
+                    st.error("ID e Nome são obrigatórios")
+    
+    # Gerenciar categorias existentes
+    categories = {}
+    for channel in channels_data.get("featured_channels", []):
+        cat = channel.get("category")
+        if cat and cat not in categories:
+            categories[cat] = {
+                "name": cat.title(),
+                "channels": []
+            }
+        if cat:
+            categories[cat]["channels"].append(channel)
+    
+    # Mostrar categorias existentes
+    for cat_id, category in categories.items():
+        with st.expander(f"{category['name']} ({len(category['channels'])} canais)"):
+            col1, col2 = st.columns([3, 1])
+            
+            with col1:
+                new_name = st.text_input("Nome", category["name"], key=f"name_{cat_id}")
+                
+                if st.button("Salvar Alterações", key=f"save_{cat_id}"):
+                    # Atualizar nome da categoria em todos os canais
+                    for channel in channels_data["featured_channels"]:
+                        if channel.get("category") == cat_id:
+                            channel["category"] = new_name.lower()
+                    save_channels(channels_data)
+                    st.success("Alterações salvas!")
+                    st.rerun()
+            
+            with col2:
+                if st.button("Remover Categoria", key=f"del_{cat_id}"):
+                    if len(category["channels"]) > 0:
+                        st.error("Não é possível remover uma categoria com canais. Remova os canais primeiro.")
+                    else:
+                        # Remover categoria de todos os canais
+                        for channel in channels_data["featured_channels"]:
+                            if channel.get("category") == cat_id:
+                                channel.pop("category", None)
+                        save_channels(channels_data)
+                        st.success("Categoria removida!")
+                        st.rerun()
+            
+            # Mostrar canais da categoria
+            st.markdown("### Canais nesta categoria:")
+            for channel in category["channels"]:
+                col1, col2 = st.columns([3, 1])
+                with col1:
+                    st.write(f"**{channel['name']}** ({channel['subject']})")
+                with col2:
+                    if st.button("Remover Canal", key=f"remove_{channel['id']}"):
+                        channels_data["featured_channels"].remove(channel)
+                        save_channels(channels_data)
+                        st.success("Canal removido!")
+                        st.rerun()
 
 def manage_channels():
     st.header("Gerenciar Canais")
-    channels_data = load_channels()
     
     # Adicionar novo canal
-    with st.expander("Adicionar Novo Canal"):
-        # Inicializar o estado se não existir
-        if 'use_existing_subject' not in st.session_state:
-            st.session_state.use_existing_subject = False
-            
-        # Carregar matérias existentes para sugestão
-        existing_subjects = get_unique_subjects(channels_data)
+    with st.form("add_channel"):
+        st.subheader("Adicionar Novo Canal")
+        channel_url = st.text_input("URL do Canal")
+        subject = st.text_input("Assunto/Matéria")
+        category = st.selectbox("Categoria", ["vestibular", "engenharia", "informatica"])
+        is_featured = st.checkbox("Canal em Destaque?")
         
-        # Controles fora do formulário
-        subject_col1, subject_col2 = st.columns(2)
-        with subject_col1:
-            st.session_state.use_existing_subject = st.checkbox(
-                "Usar matéria existente",
-                value=st.session_state.use_existing_subject,
-                key="use_existing"
-            )
-        
-        # Formulário para adicionar canal
-        with st.form("new_channel"):
-            category_id = st.selectbox(
-                "Categoria",
-                options=["vestibular", "engenharia", "informatica"],
-                format_func=lambda x: x.title()
-            )
-            
-            channel_url = st.text_input("URL do Canal")
-            
-            # Campo de matéria baseado na escolha do usuário
-            if st.session_state.use_existing_subject and existing_subjects:
-                new_channel_subject = st.selectbox(
-                    "Selecione a matéria",
-                    options=existing_subjects,
-                    key="subject_select"
-                )
-            else:
-                new_channel_subject = st.text_input("Nova matéria")
-                
-            featured = st.checkbox("Destacar canal")
-            
-            if st.form_submit_button("Adicionar Canal"):
-                if channel_url and new_channel_subject:
-                    try:
-                        channel_id = extract_channel_id(channel_url)
-                        if channel_id:
-                            # Verificar se o canal já existe
-                            channel_exists = any(
-                                c["id"] == channel_id 
-                                for c in channels_data.get("featured_channels", [])
-                            )
+        if st.form_submit_button("Adicionar Canal"):
+            if channel_url and subject:
+                channel_id = extract_channel_id(channel_url)
+                if channel_id:
+                    youtube = get_youtube_client()
+                    channel_info = get_channel_info(youtube, channel_id)
+                    
+                    if channel_info:
+                        channels_data = load_channels()
+                        
+                        # Verificar se o canal já existe
+                        existing_channels = [c for c in channels_data.get("featured_channels", []) 
+                                          if c.get("id") == channel_id]
+                        
+                        if not existing_channels:
+                            new_channel = {
+                                "id": channel_id,
+                                "name": channel_info["title"],
+                                "thumbnail": channel_info["thumbnail"],
+                                "subject": subject,
+                                "category": category,
+                                "featured": is_featured
+                            }
                             
-                            if not channel_exists:
-                                youtube = get_youtube_client()
-                                channel_info = get_channel_info(youtube, channel_id)
-                                
-                                if channel_info:
-                                    new_channel = {
-                                        "id": channel_id,
-                                        "name": channel_info["title"],
-                                        "subject": new_channel_subject,
-                                        "category": category_id,
-                                        "thumbnail": channel_info["thumbnail"],
-                                        "featured": featured
-                                    }
-                                    
-                                    if "featured_channels" not in channels_data:
-                                        channels_data["featured_channels"] = []
-                                    
-                                    channels_data["featured_channels"].append(new_channel)
-                                    save_channels(channels_data)
-                                    st.success("Canal adicionado com sucesso!")
-                                    st.rerun()
-                                else:
-                                    st.error("Não foi possível obter informações do canal")
-                            else:
-                                st.error("Este canal já está cadastrado")
+                            if "featured_channels" not in channels_data:
+                                channels_data["featured_channels"] = []
+                            
+                            channels_data["featured_channels"].append(new_channel)
+                            save_channels(channels_data)
+                            st.success("Canal adicionado com sucesso!")
+                            st.rerun()
                         else:
-                            st.error("URL do canal inválida")
-                    except Exception as e:
-                        st.error(f"Erro ao adicionar canal: {str(e)}")
-                else:
-                    st.error("URL do canal e matéria são obrigatórios")
+                            st.error("Este canal já está cadastrado!")
+                    else:
+                        st.error("Não foi possível obter informações do canal")
+            else:
+                st.error("URL do canal e assunto são obrigatórios")
     
     # Editar/Remover canais existentes
     with st.expander("Editar/Remover Canais"):
-        channels = channels_data.get("featured_channels", [])
+        channels = load_channels().get("featured_channels", [])
         if not channels:
             st.info("Nenhum canal cadastrado")
             return
@@ -238,14 +241,14 @@ def manage_channels():
                         "category": new_category,
                         "featured": new_featured
                     })
-                    save_channels(channels_data)
+                    save_channels({"featured_channels": channels})
                     st.success("Alterações salvas!")
                     st.rerun()
             
             with col2:
                 if st.button("Remover Canal", key=f"del_{i}"):
                     channels.pop(i)
-                    save_channels(channels_data)
+                    save_channels({"featured_channels": channels})
                     st.success("Canal removido!")
                     st.rerun()
 

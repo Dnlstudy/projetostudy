@@ -2,6 +2,7 @@ import streamlit as st
 import os
 from googleapiclient.discovery import build
 from dotenv import load_dotenv
+from urllib.parse import unquote
 
 def get_youtube_client():
     load_dotenv()
@@ -42,8 +43,8 @@ def get_channel_info(youtube, channel_id):
 def extract_channel_id(url):
     """Extrai o ID do canal de diferentes formatos de URL do YouTube"""
     try:
-        # Remover parâmetros da URL
-        url = url.split('?')[0].strip('/')
+        # Remover parâmetros da URL e decodificar caracteres especiais
+        url = unquote(url.split('?')[0].strip('/'))
         
         if '/channel/' in url:
             # Para URLs no formato youtube.com/channel/ID
@@ -60,17 +61,24 @@ def extract_channel_id(url):
                 channel_handle = url.split('/')[-1]
             
             # Buscar canal
-            request = youtube.search().list(
-                part="id",
-                q=channel_handle,
-                type="channel",
-                maxResults=1
-            )
-            response = request.execute()
+            try:
+                request = youtube.search().list(
+                    part="id",
+                    q=channel_handle,
+                    type="channel",
+                    maxResults=1
+                )
+                response = request.execute()
+                
+                if response.get('items'):
+                    return response['items'][0]['id']['channelId']
+                else:
+                    st.error(f"Canal não encontrado para: {channel_handle}")
+            except Exception as e:
+                st.error(f"Erro ao buscar canal: {str(e)}")
             
-            if response.get('items'):
-                return response['items'][0]['id']['channelId']
-            
+        else:
+            st.error("Formato de URL não suportado. Use uma URL do canal no formato /channel/, /c/, /user/ ou @handle")
         return None
     except Exception as e:
         st.error(f"Erro ao extrair ID do canal: {str(e)}")
