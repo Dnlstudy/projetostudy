@@ -89,10 +89,6 @@
         "informatica": {
             "name": "Informática",
             "description": "Canais sobre programação e computação"
-        },
-        "engenharia": {
-            "name": "Engenharia",
-            "description": "Canais sobre engenharia e tecnologia"
         }
     },
     "banners": {
