@@ -96,7 +96,6 @@ def main():
         st.markdown(f"""
         <div class="banner-container">
             <img src="{data['banners']['cover']}" style="width:100%; max-height:300px; object-fit:cover;">
-            <div class="banner-text">Bem-vindo ao Studyflix</div>
         </div>
         """, unsafe_allow_html=True)
     
@@ -139,6 +138,17 @@ def main():
                     <h4 class="channel-title">{channel['name']}</h4>
                 </a>
                 """, unsafe_allow_html=True)
+
+    # Rodapé
+    st.markdown("---")
+    st.markdown(
+        """
+        <div style='text-align: center; color: #666; padding: 20px;'>
+            Desenvolvido por <a href='https://x.com/danielstudytwt' target='_blank' style='color: #E50914;'>@danielstudytwt</a>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 if __name__ == "__main__":
     main()
