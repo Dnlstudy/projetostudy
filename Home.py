@@ -80,7 +80,8 @@ def main():
                 key=f"cat_btn_{cat_id}",
                 use_container_width=True
             ):
-                st.switch_page(f"pages/3_📚_Categoria.py?categoria={cat_id}")
+                st.session_state.selected_category = cat_id
+                st.switch_page("pages/3_📚_Categoria.py")
     
     # Banner principal
     if "banners" in data and "cover" in data["banners"]:
