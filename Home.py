@@ -93,28 +93,72 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def display_channels(channels_data):
-    # Remove padding padrão do Streamlit e força tema escuro
+    # CSS para o carrossel
     st.markdown("""
         <style>
-            /* Reset Streamlit */
-            .element-container, .stMarkdown, div[data-testid="stHorizontalBlock"], 
-            .stDeployButton, .main, .st-emotion-cache-1y4p8pa,
-            .st-emotion-cache-1wrcr25, .st-emotion-cache-6qob1r,
-            .st-emotion-cache-ue6h4q, .st-emotion-cache-eczf16 {
-                padding: 0 !important;
-                margin: 0 !important;
-                background-color: transparent !important;
-                color: white !important;
+            .scroll-container {
+                display: flex;
+                overflow-x: auto;
+                gap: 1.5rem;
+                padding: 1rem 0;
+                margin: 0 -1rem;
+                scroll-behavior: smooth;
             }
             
-            /* Força tema escuro */
-            body, iframe {
-                background-color: rgb(14, 17, 23) !important;
+            .scroll-container::-webkit-scrollbar {
+                height: 0;
+                width: 0;
             }
             
-            /* Esconde scrollbar padrão */
-            ::-webkit-scrollbar {
-                display: none !important;
+            .channel-card {
+                flex: 0 0 auto;
+                width: 300px;
+                text-decoration: none;
+                transition: transform 0.2s;
+            }
+            
+            .channel-card:hover {
+                transform: scale(1.02);
+            }
+            
+            .channel-thumbnail {
+                position: relative;
+                width: 100%;
+                padding-top: 56.25%; /* 16:9 Aspect Ratio */
+                border-radius: 8px;
+                overflow: hidden;
+                background: #1f1f1f;
+            }
+            
+            .channel-thumbnail img {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            
+            .channel-title {
+                color: white;
+                margin-top: 0.8rem;
+                font-size: 0.95rem;
+                font-weight: 500;
+                line-height: 1.2;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+            }
+            
+            @media (max-width: 768px) {
+                .channel-card {
+                    width: 220px;
+                }
+                .channel-title {
+                    font-size: 0.9rem;
+                }
             }
         </style>
     """, unsafe_allow_html=True)
@@ -134,97 +178,28 @@ def display_channels(channels_data):
         # Título da matéria
         st.markdown(f'<h3 class="subject-title">{subject}</h3>', unsafe_allow_html=True)
         
-        # Calcular altura baseada no número de linhas do título (2) + altura da imagem + padding
-        img_height = 280 * 9/16  # width * 9/16 para aspect ratio 16:9
-        title_height = 2 * 14 * 1.2  # 2 linhas * font-size * line-height
-        total_height = img_height + title_height + 40  # +40 para padding e margem
+        # Container para os cards
+        html = '<div class="scroll-container">'
         
-        # Construir os cards primeiro
-        cards_html = ""
+        # Adicionar cards
         for channel in channels:
-            cards_html += f'''
-                <a href="https://youtube.com/channel/{channel["id"]}" target="_blank" class="channel-card">
-                    <img src="{channel["thumbnail"]}" alt="{channel["name"]}">
-                    <div class="channel-title">{channel["name"]}</div>
+            channel_id = channel.get("id", "")
+            thumbnail = channel.get("thumbnail", "")
+            title = channel.get("name", "")
+            
+            html += f'''
+                <a href="https://youtube.com/channel/{channel_id}" target="_blank" class="channel-card">
+                    <div class="channel-thumbnail">
+                        <img src="{thumbnail}" alt="{title}">
+                    </div>
+                    <div class="channel-title">{title}</div>
                 </a>
             '''
         
-        # HTML completo com iframe
-        html = f"""
-            <div style="width: 100%; height: {int(total_height)}px;">
-                <iframe srcdoc='
-                    <!DOCTYPE html>
-                    <html style="background: rgb(14, 17, 23);">
-                    <head>
-                        <style>
-                            body {{
-                                margin: 0;
-                                padding: 0;
-                                background: rgb(14, 17, 23);
-                                overflow-x: auto;
-                                overflow-y: hidden;
-                            }}
-                            .scroll-container {{
-                                display: flex;
-                                gap: 1rem;
-                                padding: 1rem 0;
-                                overflow-x: auto;
-                                scroll-behavior: smooth;
-                                scrollbar-width: none;
-                            }}
-                            .scroll-container::-webkit-scrollbar {{
-                                display: none;
-                            }}
-                            .channel-card {{
-                                flex: 0 0 auto;
-                                width: 280px;
-                                text-decoration: none;
-                            }}
-                            .channel-card img {{
-                                width: 100%;
-                                border-radius: 8px;
-                                aspect-ratio: 16/9;
-                                object-fit: contain;
-                                transition: transform 0.2s;
-                            }}
-                            .channel-card:hover img {{
-                                transform: scale(1.05);
-                            }}
-                            .channel-title {{
-                                color: white;
-                                margin-top: 8px;
-                                font-size: 14px;
-                                text-align: left;
-                                overflow: hidden;
-                                text-overflow: ellipsis;
-                                display: -webkit-box;
-                                -webkit-line-clamp: 2;
-                                -webkit-box-orient: vertical;
-                                line-height: 1.2;
-                                height: 2.4em;
-                            }}
-                            @media (max-width: 768px) {{
-                                .channel-card {{
-                                    width: 200px;
-                                }}
-                            }}
-                        </style>
-                    </head>
-                    <body>
-                        <div class="scroll-container">
-                            {cards_html}
-                        </div>
-                    </body>
-                    </html>
-                ' 
-                style="width: 100%; height: 100%; border: none; background: rgb(14, 17, 23);"
-                >
-                </iframe>
-            </div>
-        """
+        html += '</div>'
         
-        # Renderizar usando components.html
-        st.components.v1.html(html, height=int(total_height))
+        # Renderizar o container
+        st.markdown(html, unsafe_allow_html=True)
 
 def main():
     # Carregar dados
