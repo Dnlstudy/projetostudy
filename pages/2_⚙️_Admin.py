@@ -265,23 +265,32 @@ def manage_channels():
                     key="subject_type_radio"
                 )
                 
+                # Container para matéria existente
+                existing_container = st.container()
+                # Container para nova matéria
+                new_container = st.container()
+                
                 if subject_type == "Usar Existente":
-                    subject = st.selectbox(
-                        "Selecione a Matéria",
-                        options=existing_subjects,
-                        key="existing_subject_select"
-                    )
+                    with existing_container:
+                        subject = st.selectbox(
+                            "Selecione a Matéria",
+                            options=existing_subjects,
+                            key="existing_subject_select"
+                        )
+                    new_container.empty()
                 else:
-                    subject = st.text_input(
-                        "Nova Matéria",
-                        help="Digite o nome da matéria (ex: Matemática, Física)",
-                        key="new_subject_input_with_existing"
-                    )
+                    with new_container:
+                        subject = st.text_input(
+                            "Nova Matéria",
+                            help="Digite o nome da matéria (ex: Matemática, Física)",
+                            key="new_subject_input"
+                        )
+                    existing_container.empty()
             else:
                 subject = st.text_input(
                     "Nova Matéria",
                     help="Digite o nome da matéria (ex: Matemática, Física)",
-                    key="new_subject_input_without_existing"
+                    key="new_subject_input_single"
                 )
         
         submit = st.form_submit_button("Adicionar Canal", use_container_width=True)
