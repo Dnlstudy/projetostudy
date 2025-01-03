@@ -93,76 +93,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def display_channels(channels_data):
-    # CSS para o carrossel
-    st.markdown("""
-        <style>
-            .scroll-container {
-                display: flex;
-                overflow-x: auto;
-                gap: 1.5rem;
-                padding: 1rem 0;
-                margin: 0 -1rem;
-                scroll-behavior: smooth;
-            }
-            
-            .scroll-container::-webkit-scrollbar {
-                height: 0;
-                width: 0;
-            }
-            
-            .channel-card {
-                flex: 0 0 auto;
-                width: 300px;
-                text-decoration: none;
-                transition: transform 0.2s;
-            }
-            
-            .channel-card:hover {
-                transform: scale(1.02);
-            }
-            
-            .channel-thumbnail {
-                position: relative;
-                width: 100%;
-                padding-top: 56.25%; /* 16:9 Aspect Ratio */
-                border-radius: 8px;
-                overflow: hidden;
-                background: #1f1f1f;
-            }
-            
-            .channel-thumbnail img {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-            
-            .channel-title {
-                color: white;
-                margin-top: 0.8rem;
-                font-size: 0.95rem;
-                font-weight: 500;
-                line-height: 1.2;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                display: -webkit-box;
-                -webkit-line-clamp: 2;
-                -webkit-box-orient: vertical;
-            }
-            
-            @media (max-width: 768px) {
-                .channel-card {
-                    width: 220px;
-                }
-                .channel-title {
-                    font-size: 0.9rem;
-                }
-            }
-        </style>
-    """, unsafe_allow_html=True)
-    
     # Agrupar canais por matéria
     channels_by_subject = {}
     for channel in channels_data.get("featured_channels", []):
@@ -171,6 +101,18 @@ def display_channels(channels_data):
             channels_by_subject[subject] = []
         channels_by_subject[subject].append(channel)
     
+    # CSS simples para scroll horizontal
+    st.markdown("""
+        <style>
+            div.row-widget.stHorizontalBlock {
+                overflow-x: auto;
+                white-space: nowrap;
+                flex-wrap: nowrap;
+                gap: 1rem;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+    
     # Exibir canais agrupados por matéria em ordem alfabética
     for subject in sorted(channels_by_subject.keys()):
         channels = channels_by_subject[subject]
@@ -178,28 +120,20 @@ def display_channels(channels_data):
         # Título da matéria
         st.markdown(f'<h3 class="subject-title">{subject}</h3>', unsafe_allow_html=True)
         
-        # Container para os cards
-        html = '<div class="scroll-container">'
+        # Criar colunas para os cards
+        cols = st.columns(len(channels))
         
-        # Adicionar cards
-        for channel in channels:
-            channel_id = channel.get("id", "")
-            thumbnail = channel.get("thumbnail", "")
-            title = channel.get("name", "")
-            
-            html += f'''
-                <a href="https://youtube.com/channel/{channel_id}" target="_blank" class="channel-card">
-                    <div class="channel-thumbnail">
-                        <img src="{thumbnail}" alt="{title}">
-                    </div>
-                    <div class="channel-title">{title}</div>
-                </a>
-            '''
-        
-        html += '</div>'
-        
-        # Renderizar o container
-        st.markdown(html, unsafe_allow_html=True)
+        # Adicionar cards nas colunas
+        for idx, (col, channel) in enumerate(zip(cols, channels)):
+            with col:
+                st.markdown(f'''
+                    <a href="https://youtube.com/channel/{channel["id"]}" target="_blank" style="text-decoration: none;">
+                        <img src="{channel["thumbnail"]}" style="width: 100%; border-radius: 8px;">
+                        <p style="color: white; margin-top: 8px; font-size: 14px; text-align: center;">
+                            {channel["name"]}
+                        </p>
+                    </a>
+                ''', unsafe_allow_html=True)
 
 def main():
     # Carregar dados
