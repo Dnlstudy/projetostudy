@@ -190,7 +190,9 @@ def manage_categories():
                     if has_channels:
                         st.error("Não é possível remover uma categoria que possui canais!")
                     else:
-                        channels_data["categories"].pop(cat_id)
+                        # Remover a categoria
+                        del channels_data["categories"][cat_id]
+                        # Salvar as alterações
                         save_channels(channels_data)
                         st.success("Categoria removida com sucesso!")
                         st.rerun()
@@ -217,6 +219,12 @@ def manage_categories():
         
         st.markdown("---")
 
+def get_unique_subjects(channels_data):
+    return sorted(set(
+        ch["subject"] for ch in channels_data.get("featured_channels", [])
+        if "subject" in ch
+    ))
+
 def manage_channels():
     st.markdown("<h1 class='admin-title'>Gerenciar Canais</h1>", unsafe_allow_html=True)
     
@@ -233,6 +241,23 @@ def manage_channels():
     # Adicionar novo canal
     st.markdown("### Adicionar Novo Canal")
     
+    # Inicializar o estado se não existir
+    if 'use_existing_subject' not in st.session_state:
+        st.session_state.use_existing_subject = False
+    
+    # Carregar matérias existentes
+    existing_subjects = get_unique_subjects(channels_data)
+    
+    # Checkbox fora do formulário
+    subject_col1, subject_col2 = st.columns(2)
+    with subject_col1:
+        st.session_state.use_existing_subject = st.checkbox(
+            "Usar matéria existente",
+            value=st.session_state.use_existing_subject,
+            key="use_existing"
+        )
+    
+    # Formulário para adicionar canal
     with st.form("add_channel"):
         col1, col2 = st.columns(2)
         
@@ -251,38 +276,18 @@ def manage_channels():
             )
         
         with col2:
-            # Carregar matérias existentes
-            existing_subjects = sorted(set(
-                ch["subject"] for ch in channels_data.get("featured_channels", [])
-                if "subject" in ch
-            ))
-            
-            # Opção para usar matéria existente ou criar nova
-            if existing_subjects:
-                subject_type = st.radio(
-                    "Tipo de Matéria",
-                    ["Usar Existente", "Criar Nova"],
-                    horizontal=True,
-                    key="subject_type_radio"
+            # Campo de matéria baseado na escolha do usuário
+            if st.session_state.use_existing_subject and existing_subjects:
+                subject = st.selectbox(
+                    "Selecione a matéria",
+                    options=existing_subjects,
+                    key="subject_select"
                 )
-                
-                if subject_type == "Usar Existente":
-                    subject = st.selectbox(
-                        "Selecione a Matéria",
-                        options=existing_subjects,
-                        key="existing_subject_select"
-                    )
-                else:
-                    subject = st.text_input(
-                        "Nova Matéria",
-                        help="Digite o nome da matéria (ex: Matemática, Física)",
-                        key="new_subject_input"
-                    )
             else:
                 subject = st.text_input(
-                    "Nova Matéria",
+                    "Nova matéria",
                     help="Digite o nome da matéria (ex: Matemática, Física)",
-                    key="new_subject_input_single"
+                    key="new_subject_input"
                 )
         
         submit = st.form_submit_button("Adicionar Canal", use_container_width=True)
@@ -292,7 +297,9 @@ def manage_channels():
                 st.error("Por favor, insira a URL do canal!")
                 return
             
-            if not subject:
+            if st.session_state.use_existing_subject and existing_subjects:
+                subject = subject
+            elif not subject:
                 st.error("Por favor, selecione ou digite uma matéria!")
                 return
             
