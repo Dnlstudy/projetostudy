@@ -78,70 +78,47 @@ def verify_session():
 
 def get_unique_subjects(channels_data):
     subjects = set()
-    for category in channels_data["categories"].values():
-        if "channels" in category:
-            for channel in category["channels"]:
-                if "subject" in channel:
-                    subjects.add(channel["subject"])
+    for channel in channels_data.get("featured_channels", []):
+        if "subject" in channel:
+            subjects.add(channel["subject"])
     return sorted(list(subjects))
 
 def manage_categories():
     st.header("Gerenciar Categorias")
     channels_data = load_channels()
     
-    # Adicionar nova categoria
-    with st.expander("Adicionar Nova Categoria"):
-        with st.form("new_category"):
-            cat_id = st.text_input("ID da Categoria (ex: engenharia)").lower().strip()
-            cat_name = st.text_input("Nome da Categoria")
-            cat_desc = st.text_area("Descrição")
-            cat_featured = st.checkbox("Destacar na página inicial")
-            
-            if st.form_submit_button("Adicionar Categoria"):
-                if cat_id and cat_name:
-                    if cat_id not in channels_data["categories"]:
-                        channels_data["categories"][cat_id] = {
-                            "name": cat_name,
-                            "description": cat_desc,
-                            "featured": cat_featured,
-                            "channels": []
-                        }
-                        save_channels(channels_data)
-                        st.success("Categoria adicionada com sucesso!")
-                    else:
-                        st.error("Já existe uma categoria com este ID")
-                else:
-                    st.error("ID e Nome são obrigatórios")
-
-    # Editar/Remover categorias existentes
-    with st.expander("Editar/Remover Categorias"):
-        for cat_id, category in channels_data["categories"].items():
-            st.subheader(category["name"])
-            col1, col2 = st.columns([3, 1])
-            
-            with col1:
-                new_name = st.text_input(f"Nome", category["name"], key=f"name_{cat_id}")
-                new_desc = st.text_area(f"Descrição", category["description"], key=f"desc_{cat_id}")
-                new_featured = st.checkbox("Destacar", category["featured"], key=f"feat_{cat_id}")
-                
-                if st.button("Salvar Alterações", key=f"save_{cat_id}"):
-                    channels_data["categories"][cat_id].update({
-                        "name": new_name,
-                        "description": new_desc,
-                        "featured": new_featured
-                    })
-                    save_channels(channels_data)
-                    st.success("Alterações salvas!")
-            
-            with col2:
-                if st.button("Remover Categoria", key=f"del_{cat_id}"):
-                    if len(channels_data["categories"][cat_id]["channels"]) > 0:
-                        st.error("Não é possível remover uma categoria com canais")
-                    else:
-                        del channels_data["categories"][cat_id]
-                        save_channels(channels_data)
-                        st.success("Categoria removida!")
-                        st.rerun()
+    # Lista de categorias disponíveis
+    AVAILABLE_CATEGORIES = {
+        "vestibular": {
+            "name": "Vestibular",
+            "description": "Canais focados em preparação para vestibular"
+        },
+        "engenharia": {
+            "name": "Engenharia",
+            "description": "Canais sobre engenharia e tecnologia"
+        },
+        "informatica": {
+            "name": "Informática",
+            "description": "Canais sobre programação e computação"
+        }
+    }
+    
+    st.info("As categorias são pré-definidas para manter a organização do site.")
+    
+    # Mostrar canais por categoria
+    for cat_id, category in AVAILABLE_CATEGORIES.items():
+        st.subheader(f"{category['name']}")
+        st.write(category['description'])
+        
+        # Filtrar canais desta categoria
+        category_channels = [ch for ch in channels_data.get("featured_channels", []) 
+                           if ch.get("category") == cat_id]
+        
+        if category_channels:
+            for channel in category_channels:
+                st.write(f"- {channel['name']} ({channel['subject']})")
+        else:
+            st.write("Nenhum canal nesta categoria.")
 
 def manage_channels():
     st.header("Gerenciar Canais")
@@ -169,8 +146,8 @@ def manage_channels():
         with st.form("new_channel"):
             category_id = st.selectbox(
                 "Categoria",
-                options=list(channels_data["categories"].keys()),
-                format_func=lambda x: channels_data["categories"][x]["name"]
+                options=["vestibular", "engenharia", "informatica"],
+                format_func=lambda x: x.title()
             )
             
             channel_url = st.text_input("URL do Canal")
@@ -192,12 +169,11 @@ def manage_channels():
                     try:
                         channel_id = extract_channel_id(channel_url)
                         if channel_id:
-                            # Verificar se o canal já existe em alguma categoria
-                            channel_exists = False
-                            for cat in channels_data["categories"].values():
-                                if any(c["id"] == channel_id for c in cat["channels"]):
-                                    channel_exists = True
-                                    break
+                            # Verificar se o canal já existe
+                            channel_exists = any(
+                                c["id"] == channel_id 
+                                for c in channels_data.get("featured_channels", [])
+                            )
                             
                             if not channel_exists:
                                 youtube = get_youtube_client()
@@ -206,57 +182,65 @@ def manage_channels():
                                 if channel_info:
                                     new_channel = {
                                         "id": channel_id,
-                                        "name": channel_info["snippet"]["title"],
-                                        "subject": new_channel_subject.strip(),
-                                        "thumbnail": channel_info["snippet"]["thumbnails"]["high"]["url"],
+                                        "name": channel_info["title"],
+                                        "subject": new_channel_subject,
+                                        "category": category_id,
+                                        "thumbnail": channel_info["thumbnail"],
                                         "featured": featured
                                     }
                                     
-                                    channels_data["categories"][category_id]["channels"].append(new_channel)
+                                    if "featured_channels" not in channels_data:
+                                        channels_data["featured_channels"] = []
+                                    
+                                    channels_data["featured_channels"].append(new_channel)
                                     save_channels(channels_data)
                                     st.success("Canal adicionado com sucesso!")
+                                    st.rerun()
                                 else:
                                     st.error("Não foi possível obter informações do canal")
                             else:
-                                st.error("Este canal já existe em outra categoria")
+                                st.error("Este canal já está cadastrado")
                         else:
                             st.error("URL do canal inválida")
                     except Exception as e:
                         st.error(f"Erro ao adicionar canal: {str(e)}")
                 else:
                     st.error("URL do canal e matéria são obrigatórios")
-
-    # Gerenciar canais existentes
-    with st.expander("Gerenciar Canais Existentes"):
-        category_to_manage = st.selectbox(
-            "Selecione a categoria para gerenciar",
-            options=list(channels_data["categories"].keys()),
-            format_func=lambda x: channels_data["categories"][x]["name"]
-        )
-        
-        category = channels_data["categories"][category_to_manage]
-        if not category["channels"]:
-            st.info("Não há canais nesta categoria")
+    
+    # Editar/Remover canais existentes
+    with st.expander("Editar/Remover Canais"):
+        channels = channels_data.get("featured_channels", [])
+        if not channels:
+            st.info("Nenhum canal cadastrado")
             return
-            
-        for idx, channel in enumerate(category["channels"]):
+        
+        for i, channel in enumerate(channels):
+            st.subheader(channel["name"])
             col1, col2 = st.columns([3, 1])
             
             with col1:
-                st.subheader(channel["name"])
-                new_subject = st.text_input("Matéria", channel["subject"], key=f"subject_{channel['id']}")
-                new_featured = st.checkbox("Destacado", channel["featured"], key=f"featured_{channel['id']}")
+                new_subject = st.text_input(f"Matéria", channel["subject"], key=f"subject_{i}")
+                new_category = st.selectbox(
+                    "Categoria",
+                    options=["vestibular", "engenharia", "informatica"],
+                    index=["vestibular", "engenharia", "informatica"].index(channel["category"]),
+                    key=f"category_{i}"
+                )
+                new_featured = st.checkbox("Destacar", channel["featured"], key=f"feat_{i}")
                 
-                if st.button("Salvar Alterações", key=f"save_{channel['id']}"):
-                    channel["subject"] = new_subject
-                    channel["featured"] = new_featured
+                if st.button("Salvar Alterações", key=f"save_{i}"):
+                    channels[i].update({
+                        "subject": new_subject,
+                        "category": new_category,
+                        "featured": new_featured
+                    })
                     save_channels(channels_data)
                     st.success("Alterações salvas!")
+                    st.rerun()
             
             with col2:
-                st.image(channel["thumbnail"], width=150)
-                if st.button("Remover Canal", key=f"remove_{channel['id']}"):
-                    category["channels"].pop(idx)
+                if st.button("Remover Canal", key=f"del_{i}"):
+                    channels.pop(i)
                     save_channels(channels_data)
                     st.success("Canal removido!")
                     st.rerun()

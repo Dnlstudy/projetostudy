@@ -206,7 +206,7 @@ def main():
     st.markdown("<h1 class='netflix-title'>Studyflix</h1>", unsafe_allow_html=True)
     
     # Mostrar canais em destaque
-    featured_channels = [c for c in categories["vestibular"]["channels"] if c.get("featured", False)]
+    featured_channels = [c for c in data.get("featured_channels", []) if c.get("featured", False)]
     if featured_channels:
         st.markdown("<h2 style='color: #E50914;'>Destaques</h2>", unsafe_allow_html=True)
         cols = st.columns(4)
@@ -223,6 +223,9 @@ def main():
                         </a>
                     </div>
                 ''', unsafe_allow_html=True)
+    
+    # Mostrar todos os canais da categoria vestibular
+    show_category("vestibular", categories["vestibular"])
 
 if __name__ == "__main__":
     main()
