@@ -102,20 +102,20 @@ def display_channels(channels_data):
         channels_by_subject[subject].append(channel)
     
     # CSS para o carrossel
-    st.markdown("""
-        <style>
+    css = """
+    <style>
         .scroll-container {
             display: flex;
             overflow-x: auto;
             padding: 1rem 0;
             gap: 1rem;
-            scrollbar-width: none;  /* Firefox */
-            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
             scroll-behavior: smooth;
         }
         
         .scroll-container::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera */
+            display: none;
         }
         
         .channel-card {
@@ -155,8 +155,8 @@ def display_channels(channels_data):
                 width: 160px;
             }
         }
-        </style>
-    """, unsafe_allow_html=True)
+    </style>
+    """
     
     # Exibir canais agrupados por matéria em ordem alfabética
     for subject in sorted(channels_by_subject.keys()):
@@ -165,8 +165,8 @@ def display_channels(channels_data):
         # Título da matéria
         st.markdown(f'<h3 class="subject-title">{subject}</h3>', unsafe_allow_html=True)
         
-        # Container scrollável
-        container_html = '<div class="scroll-container">'
+        # Construir HTML do carrossel
+        html = css + '<div class="scroll-container">'
         
         # Adicionar cards
         for channel in channels:
@@ -174,15 +174,17 @@ def display_channels(channels_data):
             thumbnail = channel.get("thumbnail", "")
             title = channel.get("name", "")
             
-            container_html += f'''
+            html += f'''
                 <a href="https://youtube.com/channel/{channel_id}" target="_blank" class="channel-card">
                     <img src="{thumbnail}" alt="{title}">
                     <div class="channel-title">{title}</div>
                 </a>
             '''
         
-        container_html += '</div>'
-        st.markdown(container_html, unsafe_allow_html=True)
+        html += '</div>'
+        
+        # Renderizar usando components.html
+        st.components.v1.html(html, height=300)
 
 def main():
     # Carregar dados
