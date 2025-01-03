@@ -141,27 +141,98 @@ def show_category(category_id, category_data):
         st.markdown("<hr style='margin: 30px 0; border-color: #333;'>", unsafe_allow_html=True)
 
 def main():
+    st.set_page_config(
+        page_title="Studyflix",
+        page_icon="📚",
+        layout="wide"
+    )
+
     # Carregar dados
     data = load_channels()
+    categories = data.get("categories", {})
     
-    # Definir categorias
-    categories = {
-        "vestibular": {
-            "name": "Vestibular",
-            "description": "Canais focados em preparação para vestibular",
-            "channels": [ch for ch in data.get("featured_channels", []) if ch.get("category") == "vestibular"]
-        },
-        "engenharia": {
-            "name": "Engenharia",
-            "description": "Canais sobre engenharia e tecnologia",
-            "channels": []  # Por enquanto não temos canais nesta categoria
-        },
-        "informatica": {
-            "name": "Informática",
-            "description": "Canais sobre programação e computação",
-            "channels": [ch for ch in data.get("featured_channels", []) if ch.get("category") == "informatica"]
-        }
+    # Custom CSS
+    st.markdown("""
+    <style>
+    .netflix-title {
+        color: #E50914;
+        font-size: 48px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 30px;
     }
+    .subject-title {
+        color: white;
+        font-size: 24px;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+    .channel-card {
+        background-color: #181818;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 5px;
+        transition: transform 0.2s;
+    }
+    .channel-card:hover {
+        transform: scale(1.05);
+        background-color: #282828;
+    }
+    .banner-container {
+        position: relative;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .banner-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 36px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # Banner principal
+    if "banners" in data and "cover" in data["banners"]:
+        st.markdown(f"""
+        <div class="banner-container">
+            <img src="{data['banners']['cover']}" style="width:100%; max-height:300px; object-fit:cover;">
+            <div class="banner-text">Bem-vindo ao Studyflix</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("<h1 class='netflix-title'>Studyflix</h1>", unsafe_allow_html=True)
+    
+    # Filtrar apenas canais de vestibular
+    vestibular_channels = [
+        ch for ch in data.get("featured_channels", [])
+        if ch.get("category") == "vestibular"
+    ]
+    
+    # Agrupar canais por matéria
+    subjects = {}
+    for channel in vestibular_channels:
+        if channel["subject"] not in subjects:
+            subjects[channel["subject"]] = []
+        subjects[channel["subject"]].append(channel)
+    
+    # Mostrar canais por matéria
+    for subject, channels in sorted(subjects.items()):
+        st.markdown(f"<h2 class='subject-title'>{subject}</h2>", unsafe_allow_html=True)
+        cols = st.columns(4)
+        for idx, channel in enumerate(channels):
+            with cols[idx % 4]:
+                st.markdown(f"""
+                <div class='channel-card'>
+                    <img src="{channel['thumbnail']}" style="width:100%; border-radius:5px;">
+                    <h4 style="color:white; margin-top:10px;">{channel['name']}</h4>
+                </div>
+                """, unsafe_allow_html=True)
+                if st.button("Ver Canal", key=f"btn_{channel['id']}"):
+                    st.switch_page(f"https://youtube.com/channel/{channel['id']}")
     
     # Menu lateral com categorias
     with st.sidebar:
@@ -194,51 +265,5 @@ def main():
         show_category(selected_category, categories[selected_category])
         return
     
-    # Página inicial (vestibular)
-    # Banner principal
-    if "banners" in data and "cover" in data["banners"]:
-        st.markdown(f"""
-            <div class="banner-container">
-                <img src="{data['banners']['cover']}" class="cover-banner">
-            </div>
-        """, unsafe_allow_html=True)
-    
-    st.markdown("<h1 class='netflix-title'>Studyflix</h1>", unsafe_allow_html=True)
-    
-    # Mostrar categorias em cards
-    for cat_id, category in categories.items():
-        with st.container():
-            st.markdown(f"""
-            <div class='category-card'>
-                <h3>{category['name']}</h3>
-                <p>{category['description']}</p>
-                <a href="?page=3_📚_Categoria&categoria={cat_id}" target="_self">
-                    <button>Ver Canais</button>
-                </a>
-            </div>
-            """, unsafe_allow_html=True)
-    
-    # Mostrar canais em destaque
-    featured_channels = [c for c in data.get("featured_channels", []) if c.get("featured", False)]
-    if featured_channels:
-        st.markdown("<h2 style='color: #E50914;'>Destaques</h2>", unsafe_allow_html=True)
-        cols = st.columns(4)
-        for idx, channel in enumerate(featured_channels):
-            with cols[idx % 4]:
-                st.markdown(f'''
-                    <div class="featured-channel">
-                        <a href="https://www.youtube.com/channel/{channel['id']}" target="_blank">
-                            <img src="{channel['thumbnail']}" width="100%">
-                            <div class="channel-overlay">
-                                <h3>{channel['name']}</h3>
-                                <p>{channel.get('description', '')}</p>
-                            </div>
-                        </a>
-                    </div>
-                ''', unsafe_allow_html=True)
-    
-    # Mostrar todos os canais da categoria vestibular
-    show_category("vestibular", categories["vestibular"])
-
 if __name__ == "__main__":
     main()
