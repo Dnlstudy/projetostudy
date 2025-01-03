@@ -101,14 +101,41 @@ def display_channels(channels_data):
             channels_by_subject[subject] = []
         channels_by_subject[subject].append(channel)
     
-    # CSS simples para scroll horizontal
+    # CSS para grid com scroll horizontal
     st.markdown("""
         <style>
-            div.row-widget.stHorizontalBlock {
-                overflow-x: auto;
-                white-space: nowrap;
-                flex-wrap: nowrap;
+            .channel-grid {
+                display: grid;
+                grid-auto-flow: column;
+                grid-auto-columns: 320px;
                 gap: 1rem;
+                overflow-x: auto;
+                padding: 1rem 0;
+            }
+            
+            .channel-card {
+                text-decoration: none;
+                display: block;
+            }
+            
+            .channel-card img {
+                width: 100%;
+                border-radius: 8px;
+                aspect-ratio: 16/9;
+                object-fit: cover;
+            }
+            
+            .channel-title {
+                color: white;
+                margin-top: 8px;
+                font-size: 14px;
+                text-align: center;
+            }
+            
+            @media (max-width: 768px) {
+                .channel-grid {
+                    grid-auto-columns: 280px;
+                }
             }
         </style>
     """, unsafe_allow_html=True)
@@ -120,20 +147,18 @@ def display_channels(channels_data):
         # Título da matéria
         st.markdown(f'<h3 class="subject-title">{subject}</h3>', unsafe_allow_html=True)
         
-        # Criar colunas para os cards
-        cols = st.columns(len(channels))
+        # Grid de cards com scroll horizontal
+        html = '<div class="channel-grid">'
+        for channel in channels:
+            html += f'''
+                <a href="https://youtube.com/channel/{channel["id"]}" target="_blank" class="channel-card">
+                    <img src="{channel["thumbnail"]}" alt="{channel["name"]}">
+                    <div class="channel-title">{channel["name"]}</div>
+                </a>
+            '''
+        html += '</div>'
         
-        # Adicionar cards nas colunas
-        for idx, (col, channel) in enumerate(zip(cols, channels)):
-            with col:
-                st.markdown(f'''
-                    <a href="https://youtube.com/channel/{channel["id"]}" target="_blank" style="text-decoration: none;">
-                        <img src="{channel["thumbnail"]}" style="width: 100%; border-radius: 8px;">
-                        <p style="color: white; margin-top: 8px; font-size: 14px; text-align: center;">
-                            {channel["name"]}
-                        </p>
-                    </a>
-                ''', unsafe_allow_html=True)
+        st.markdown(html, unsafe_allow_html=True)
 
 def main():
     # Carregar dados
