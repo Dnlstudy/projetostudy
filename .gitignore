@@ -4,3 +4,4 @@ __pycache__/
 .idea/
 .vscode/
 .streamlit/secrets.toml
+admin_local.py
