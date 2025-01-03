@@ -9,71 +9,117 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS
+# Estilos CSS
 st.markdown("""
 <style>
-.netflix-title {
-    color: #E50914;
-    font-size: 48px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 30px;
-}
-.subject-title {
-    color: white;
-    font-size: 24px;
-    margin-top: 20px;
-    margin-bottom: 10px;
-}
-.channel-card {
-    background-color: #181818;
-    padding: 10px;
-    border-radius: 5px;
-    margin: 5px;
-    transition: transform 0.2s;
-    cursor: pointer;
-    text-decoration: none;
-    display: block;
-}
-.channel-card:hover {
-    transform: scale(1.05);
-    background-color: #282828;
-    text-decoration: none;
-}
-.banner-container {
-    position: relative;
-    text-align: center;
-    margin-bottom: 30px;
-}
-.banner-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 36px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-}
-.category-card {
-    background-color: #181818;
-    padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-}
-.category-card:hover {
-    background-color: #282828;
-}
-.channel-title {
-    color: white;
-    margin-top: 10px;
-    text-decoration: none;
-}
+    /* Estilos gerais */
+    .netflix-title {
+        color: #E50914;
+        font-size: 48px;
+        font-weight: bold;
+        text-align: center;
+        margin: 20px 0;
+    }
+    
+    /* Estilos do carrossel */
+    .channel-carousel {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 10px 0;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox */
+    }
+    
+    .channel-carousel::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Edge */
+    }
+    
+    .channel-card {
+        display: inline-block;
+        width: 200px;
+        margin-right: 15px;
+        vertical-align: top;
+        transition: transform 0.3s;
+    }
+    
+    .channel-card:hover {
+        transform: scale(1.05);
+    }
+    
+    .channel-card img {
+        width: 100%;
+        border-radius: 8px;
+    }
+    
+    .channel-card .title {
+        color: white;
+        margin-top: 8px;
+        font-size: 14px;
+        white-space: normal;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+    
+    .subject-title {
+        color: #E50914;
+        margin: 30px 0 10px 0;
+        font-size: 24px;
+    }
+    
+    /* Estilos responsivos */
+    @media (max-width: 768px) {
+        .channel-card {
+            width: 160px;
+            margin-right: 12px;
+        }
+        
+        .subject-title {
+            font-size: 20px;
+            margin: 20px 0 8px 0;
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
-def show_category(category_id, category_data):
-    st.markdown(f"<h2 style='color: #E50914;'>{category_data['name']}</h2>", unsafe_allow_html=True)
-    st.markdown(f"*{category_data['description']}*")
+def display_channels(channels_data):
+    # Agrupar canais por matéria
+    channels_by_subject = {}
+    for channel in channels_data.get("featured_channels", []):
+        subject = channel.get("subject", "Outros")
+        if subject not in channels_by_subject:
+            channels_by_subject[subject] = []
+        channels_by_subject[subject].append(channel)
+    
+    # Exibir canais agrupados por matéria
+    for subject, channels in channels_by_subject.items():
+        # Título da matéria
+        st.markdown(f'<h3 class="subject-title">{subject}</h3>', unsafe_allow_html=True)
+        
+        # Início do carrossel
+        carousel_html = '<div class="channel-carousel">'
+        
+        # Adicionar cards dos canais
+        for channel in channels:
+            channel_id = channel.get("id", "")
+            thumbnail = channel.get("thumbnail", "")
+            title = channel.get("name", "")
+            
+            card_html = f"""
+            <div class="channel-card">
+                <a href="https://youtube.com/channel/{channel_id}" target="_blank">
+                    <img src="{thumbnail}" alt="{title}">
+                    <div class="title">{title}</div>
+                </a>
+            </div>
+            """
+            carousel_html += card_html
+        
+        # Fechar carrossel
+        carousel_html += '</div>'
+        st.markdown(carousel_html, unsafe_allow_html=True)
 
 def main():
     # Carregar dados
@@ -153,41 +199,20 @@ def main():
     
     # Verificar categoria selecionada
     selected_category = st.session_state.get("selected_category", "vestibular")
-    
-    if selected_category in categories:
-        category = categories[selected_category]
-        st.markdown(f"<h2 style='color: #E50914;'>{category['name']}</h2>", unsafe_allow_html=True)
-        st.markdown(f"*{category['description']}*")
-    
-    # Filtrar canais da categoria selecionada
-    category_channels = [
-        ch for ch in data.get("featured_channels", [])
-        if ch.get("category") == selected_category
-    ]
-    
-    if not category_channels:
-        st.info("Ainda não há canais nesta categoria.")
-        return
-    
-    # Agrupar canais por matéria
-    subjects = {}
-    for channel in category_channels:
-        if channel["subject"] not in subjects:
-            subjects[channel["subject"]] = []
-        subjects[channel["subject"]].append(channel)
-    
-    # Mostrar canais por matéria
-    for subject, channels in sorted(subjects.items()):
-        st.markdown(f"<h2 class='subject-title'>{subject}</h2>", unsafe_allow_html=True)
-        cols = st.columns(4)
-        for idx, channel in enumerate(channels):
-            with cols[idx % 4]:
-                st.markdown(f"""
-                <a href="https://youtube.com/channel/{channel['id']}" target="_blank" class="channel-card">
-                    <img src="{channel['thumbnail']}" style="width:100%; border-radius:5px;">
-                    <h4 class="channel-title">{channel['name']}</h4>
-                </a>
-                """, unsafe_allow_html=True)
+
+    # Carregar dados dos canais
+    data = load_channels()
+
+    # Filtrar canais pela categoria selecionada
+    filtered_data = {
+        "featured_channels": [
+            ch for ch in data.get("featured_channels", [])
+            if ch.get("category") == selected_category
+        ]
+    }
+
+    # Exibir canais
+    display_channels(filtered_data)
 
     # Rodapé
     st.markdown("---")
