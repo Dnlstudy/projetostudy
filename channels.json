@@ -97,14 +97,10 @@
         "informatica": {
             "name": "Informática",
             "description": "Canais sobre programação e computação"
-        },
-        "med": {
-            "name": "medicina",
-            "description": "Canais sobre medicina"
         }
     },
     "banners": {
-        "cover": "https://i.imgur.com/wOWQpXb.jpeg",
+        "cover": "https://dkrn4sk0rn31v.cloudfront.net/uploads/2020/06/ARTIGO-ESTUDOS.png",
         "promotional": []
     }
 }
