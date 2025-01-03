@@ -103,59 +103,48 @@ def display_channels(channels_data):
     
     # CSS para o carrossel
     st.markdown("""
-    <style>
-        .subject-title {
-            color: #E50914;
-            font-size: 24px;
-            font-weight: bold;
-            margin: 24px 0 16px 0;
-        }
-        
-        .channels-container {
-            display: flex;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            gap: 16px;
-            padding: 16px 0;
-            margin: 0 -16px;
-            scroll-behavior: smooth;
-        }
-        
-        .channel-card {
-            flex: 0 0 280px;
-            min-width: 280px;
-            text-decoration: none;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            overflow: hidden;
-            transition: transform 0.2s;
-        }
-        
-        .channel-card:hover {
-            transform: scale(1.05);
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .channel-card img {
-            width: 100%;
-            aspect-ratio: 16/9;
-            object-fit: cover;
-        }
-        
-        .channel-title {
-            color: white;
-            padding: 12px;
-            font-size: 14px;
-            text-align: center;
-        }
-        
-        @media (max-width: 768px) {
-            .channel-card {
-                flex: 0 0 240px;
-                min-width: 240px;
+        <style>
+            div[data-testid="stHorizontalBlock"] {
+                gap: 16px;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding: 16px 0;
             }
-        }
-    </style>
+            
+            .subject-title {
+                color: #E50914;
+                font-size: 24px;
+                font-weight: bold;
+                margin: 24px 0 16px 0;
+            }
+            
+            .channel-card {
+                text-decoration: none;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 8px;
+                overflow: hidden;
+                transition: transform 0.2s;
+                display: block;
+            }
+            
+            .channel-card:hover {
+                transform: scale(1.05);
+                background: rgba(255, 255, 255, 0.1);
+            }
+            
+            .channel-thumbnail {
+                width: 100%;
+                aspect-ratio: 16/9;
+                object-fit: cover;
+            }
+            
+            .channel-title {
+                color: white;
+                padding: 12px;
+                font-size: 14px;
+                text-align: center;
+            }
+        </style>
     """, unsafe_allow_html=True)
     
     # Exibir canais agrupados por matéria em ordem alfabética
@@ -165,20 +154,17 @@ def display_channels(channels_data):
         # Título da matéria
         st.markdown(f'<h3 class="subject-title">{subject}</h3>', unsafe_allow_html=True)
         
-        # Container dos canais
-        channel_html = '<div class="channels-container">'
+        # Usar colunas do Streamlit para layout horizontal
+        cols = st.columns(len(channels))
         
-        # Adicionar cards dos canais
-        for channel in channels:
-            channel_html += f'''
-                <a href="https://youtube.com/channel/{channel['id']}" class="channel-card" target="_blank">
-                    <img src="{channel['thumbnail']}" alt="{channel['name']}">
-                    <div class="channel-title">{channel['name']}</div>
-                </a>
-            '''
-        
-        channel_html += '</div>'
-        st.markdown(channel_html, unsafe_allow_html=True)
+        for idx, channel in enumerate(channels):
+            with cols[idx]:
+                st.markdown(f'''
+                    <a href="https://youtube.com/channel/{channel["id"]}" class="channel-card" target="_blank">
+                        <img src="{channel["thumbnail"]}" alt="{channel["name"]}" class="channel-thumbnail">
+                        <div class="channel-title">{channel["name"]}</div>
+                    </a>
+                ''', unsafe_allow_html=True)
 
 def main():
     # Carregar dados
