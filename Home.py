@@ -98,17 +98,23 @@ def main():
         <div class="banner-container">
         """
         
-        if isinstance(cover_banner, dict) and cover_banner.get("link"):
-            banner_html += f'<a href="{cover_banner["link"]}" target="_blank">'
-            banner_url = cover_banner["url"]
+        # Pegar URL e link do banner
+        if isinstance(cover_banner, dict):
+            banner_url = cover_banner.get("url", "")
+            banner_link = cover_banner.get("link", "")
         else:
-            banner_url = cover_banner if isinstance(cover_banner, str) else cover_banner.get("url", "")
+            banner_url = cover_banner
+            banner_link = ""
+        
+        # Se tiver link, adicionar tag <a>
+        if banner_link:
+            banner_html += f'<a href="{banner_link}" target="_blank">'
         
         banner_html += f"""
             <img src="{banner_url}" style="width:100%; max-height:300px; object-fit:cover;">
         """
         
-        if isinstance(cover_banner, dict) and cover_banner.get("link"):
+        if banner_link:
             banner_html += '</a>'
         
         banner_html += '</div>'
@@ -123,14 +129,24 @@ def main():
             for i, banner in enumerate(promotional):
                 with cols[i % 3]:
                     promo_html = ""
+                    
+                    # Pegar URL e link do banner
                     if isinstance(banner, dict):
-                        if banner.get("link"):
-                            promo_html += f'<a href="{banner["link"]}" target="_blank">'
-                        promo_html += f'<img src="{banner["url"]}" style="width:100%; border-radius:8px;">'
-                        if banner.get("link"):
-                            promo_html += '</a>'
+                        banner_url = banner.get("url", "")
+                        banner_link = banner.get("link", "")
                     else:
-                        promo_html = f'<img src="{banner}" style="width:100%; border-radius:8px;">'
+                        banner_url = banner
+                        banner_link = ""
+                    
+                    # Se tiver link, adicionar tag <a>
+                    if banner_link:
+                        promo_html += f'<a href="{banner_link}" target="_blank">'
+                    
+                    promo_html += f'<img src="{banner_url}" style="width:100%; border-radius:8px;">'
+                    
+                    if banner_link:
+                        promo_html += '</a>'
+                    
                     st.markdown(promo_html, unsafe_allow_html=True)
     
     # Conteúdo principal
