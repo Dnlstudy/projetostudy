@@ -22,8 +22,8 @@ def get_image_from_url(url):
 
 def create_team_image(selected_professors_data):
     # Configurações da imagem
-    width = 1920  # Aumentado de 1200 para 1920 (Full HD)
-    height = 1920  # Mantendo quadrado
+    width = 1200
+    height = 1200
     background_color = (18, 18, 18)  # Quase preto
     card_color = (30, 30, 30)  # Cinza escuro
     text_color = (255, 255, 255)  # Branco
@@ -35,35 +35,33 @@ def create_team_image(selected_professors_data):
     
     # Carregar fonte do sistema para garantir que funcione
     try:
-        # Usar diretamente nossa fonte Bebas Neue com tamanho MUITO maior
-        font_path = os.path.join(os.path.dirname(__file__), "assets", "BebasNeue-Regular.ttf")
-        font_title = ImageFont.truetype(font_path, 400)  # Tamanho MUITO maior
-        font_text = ImageFont.truetype(font_path, 32)
-        font_small = ImageFont.truetype(font_path, 24)
-    except Exception as e:
-        print(f"Erro ao carregar fonte: {e}")
-        # Se falhar, usar fonte do sistema
+        # Tentar fonte DejaVu que é comum em sistemas Linux
+        font_title = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 400)
+        font_text = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 32)
+        font_small = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 24)
+    except:
         try:
+            # Tentar fonte Arial que é comum em Windows
             font_title = ImageFont.truetype("arial.ttf", 400)
             font_text = ImageFont.truetype("arial.ttf", 32)
             font_small = ImageFont.truetype("arial.ttf", 24)
         except:
-            # Último recurso: fonte padrão
+            # Se tudo falhar, usar fonte padrão
             font_title = ImageFont.load_default()
             font_text = ImageFont.load_default()
             font_small = ImageFont.load_default()
     
     # Adicionar título
     title = "MEU TIME"
-    title_height = 400  # Muito mais espaço para o título gigante
+    title_height = 400  # Mais espaço para o título
     
-    # Calcular posição do título
-    title_width = font_title.getlength(title) if hasattr(font_title, 'getlength') else len(title) * 150
-    title_x = (width - title_width) // 2  # Centralização mais precisa
-    title_y = 80  # Um pouco mais pra baixo por causa do tamanho
+    # Calcular largura do título manualmente (não confiar no getlength)
+    title_width = len(title) * 200  # Estimativa mais agressiva
+    title_x = (width - title_width) // 2
+    title_y = 60
     
     # Sombra do título com várias camadas para efeito mais dramático
-    shadow_offset = 15  # Sombra maior
+    shadow_offset = 15
     for offset in range(1, shadow_offset + 1):
         draw.text((title_x + offset, title_y + offset), title, 
                  fill=(100 - offset * 5, 0, 0), font=font_title)
@@ -198,7 +196,7 @@ def main():
         if st.button("Gerar Imagem do Time"):
             selected_data = [professors_dict[name] for name in selected_professors]
             image = create_team_image(selected_data)
-            st.image(image, caption="Seu Time de Professores", use_column_width=False)  # Desativando redimensionamento automático
+            st.image(image, caption="Seu Time de Professores", use_column_width=True)  # Voltando ao redimensionamento automático
             
             # Botão para download
             st.markdown(
