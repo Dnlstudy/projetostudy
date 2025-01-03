@@ -81,9 +81,6 @@ def main():
                 use_container_width=True
             ):
                 st.session_state.selected_category = cat_id
-                st.experimental_set_query_params({"category": cat_id})
-                st.experimental_write_client_data({"category": cat_id})
-                st.refresh()
     
     # Banner principal
     if "banners" in data and "cover" in data["banners"]:
@@ -96,15 +93,27 @@ def main():
     
     st.markdown("<h1 class='netflix-title'>Studyflix</h1>", unsafe_allow_html=True)
     
-    # Filtrar apenas canais de vestibular
-    vestibular_channels = [
+    # Verificar categoria selecionada
+    selected_category = st.session_state.get("selected_category", "vestibular")
+    
+    if selected_category in categories:
+        category = categories[selected_category]
+        st.markdown(f"<h2 style='color: #E50914;'>{category['name']}</h2>", unsafe_allow_html=True)
+        st.markdown(f"*{category['description']}*")
+    
+    # Filtrar canais da categoria selecionada
+    category_channels = [
         ch for ch in data.get("featured_channels", [])
-        if ch.get("category") == "vestibular"
+        if ch.get("category") == selected_category
     ]
+    
+    if not category_channels:
+        st.info("Ainda não há canais nesta categoria.")
+        return
     
     # Agrupar canais por matéria
     subjects = {}
-    for channel in vestibular_channels:
+    for channel in category_channels:
         if channel["subject"] not in subjects:
             subjects[channel["subject"]] = []
         subjects[channel["subject"]].append(channel)
