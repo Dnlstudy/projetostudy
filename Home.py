@@ -93,12 +93,47 @@ def main():
     
     # Banner principal
     if "banners" in data and "cover" in data["banners"]:
-        st.markdown(f"""
+        cover_banner = data["banners"]["cover"]
+        banner_html = f"""
         <div class="banner-container">
-            <img src="{data['banners']['cover']}" style="width:100%; max-height:300px; object-fit:cover;">
-        </div>
-        """, unsafe_allow_html=True)
+        """
+        
+        if isinstance(cover_banner, dict) and cover_banner.get("link"):
+            banner_html += f'<a href="{cover_banner["link"]}" target="_blank">'
+            banner_url = cover_banner["url"]
+        else:
+            banner_url = cover_banner if isinstance(cover_banner, str) else cover_banner.get("url", "")
+        
+        banner_html += f"""
+            <img src="{banner_url}" style="width:100%; max-height:300px; object-fit:cover;">
+        """
+        
+        if isinstance(cover_banner, dict) and cover_banner.get("link"):
+            banner_html += '</a>'
+        
+        banner_html += '</div>'
+        st.markdown(banner_html, unsafe_allow_html=True)
     
+    # Banners promocionais
+    if "banners" in data and "promotional" in data["banners"]:
+        promotional = data["banners"]["promotional"]
+        if promotional:
+            st.markdown("### 🎯 Destaques")
+            cols = st.columns(3)
+            for i, banner in enumerate(promotional):
+                with cols[i % 3]:
+                    promo_html = ""
+                    if isinstance(banner, dict):
+                        if banner.get("link"):
+                            promo_html += f'<a href="{banner["link"]}" target="_blank">'
+                        promo_html += f'<img src="{banner["url"]}" style="width:100%; border-radius:8px;">'
+                        if banner.get("link"):
+                            promo_html += '</a>'
+                    else:
+                        promo_html = f'<img src="{banner}" style="width:100%; border-radius:8px;">'
+                    st.markdown(promo_html, unsafe_allow_html=True)
+    
+    # Conteúdo principal
     st.markdown("<h1 class='netflix-title'>Studyflix</h1>", unsafe_allow_html=True)
     
     # Verificar categoria selecionada
