@@ -112,13 +112,16 @@ def manage_categories():
         col1, col2 = st.columns(2)
         with col1:
             cat_id = st.text_input("ID da Categoria (ex: vestibular)", 
-                                 help="Use apenas letras e números, sem espaços")
+                                 help="Use apenas letras e números, sem espaços",
+                                 key="category_id_input")
         with col2:
             cat_name = st.text_input("Nome da Categoria (ex: Vestibular)",
-                                   help="Nome que será exibido para os usuários")
+                                   help="Nome que será exibido para os usuários",
+                                   key="category_name_input")
         
         cat_desc = st.text_area("Descrição da Categoria",
-                               help="Uma breve descrição do tipo de conteúdo desta categoria")
+                               help="Uma breve descrição do tipo de conteúdo desta categoria",
+                               key="category_description_input")
         
         col1, col2 = st.columns(2)
         with col1:
@@ -159,8 +162,10 @@ def manage_categories():
         col1, col2 = st.columns(2)
         with col1:
             with st.form(key=f"edit_{cat_id}"):
-                new_name = st.text_input("Novo Nome", category["name"])
-                new_desc = st.text_area("Nova Descrição", category["description"])
+                new_name = st.text_input("Novo Nome", category["name"],
+                                        key=f"edit_category_name_input_{cat_id}")
+                new_desc = st.text_area("Nova Descrição", category["description"],
+                                       key=f"edit_category_description_input_{cat_id}")
                 if st.form_submit_button("Salvar Alterações", use_container_width=True):
                     if new_name:
                         channels_data["categories"][cat_id].update({
@@ -233,13 +238,15 @@ def manage_channels():
         with col1:
             channel_url = st.text_input(
                 "URL do Canal do YouTube",
-                help="Cole a URL do canal que deseja adicionar"
+                help="Cole a URL do canal que deseja adicionar",
+                key="channel_url_input"
             )
             
             category = st.selectbox(
                 "Categoria",
                 options=list(categories.keys()),
-                format_func=lambda x: f"{categories[x]['name']} ({x})"
+                format_func=lambda x: f"{categories[x]['name']} ({x})",
+                key="channel_category_select"
             )
         
         with col2:
@@ -254,23 +261,27 @@ def manage_channels():
                 subject_type = st.radio(
                     "Tipo de Matéria",
                     options=["Usar Existente", "Criar Nova"],
-                    horizontal=True
+                    horizontal=True,
+                    key="subject_type_radio"
                 )
                 
                 if subject_type == "Usar Existente":
                     subject = st.selectbox(
                         "Selecione a Matéria",
-                        options=existing_subjects
+                        options=existing_subjects,
+                        key="existing_subject_select"
                     )
                 else:
                     subject = st.text_input(
                         "Nova Matéria",
-                        help="Digite o nome da matéria (ex: Matemática, Física)"
+                        help="Digite o nome da matéria (ex: Matemática, Física)",
+                        key="new_subject_input_with_existing"
                     )
             else:
                 subject = st.text_input(
                     "Nova Matéria",
-                    help="Digite o nome da matéria (ex: Matemática, Física)"
+                    help="Digite o nome da matéria (ex: Matemática, Física)",
+                    key="new_subject_input_without_existing"
                 )
         
         submit = st.form_submit_button("Adicionar Canal", use_container_width=True)
@@ -338,14 +349,16 @@ def manage_channels():
         filter_category = st.selectbox(
             "Filtrar por Categoria",
             options=["Todas"] + list(categories.keys()),
-            format_func=lambda x: "Todas" if x == "Todas" else categories[x]["name"]
+            format_func=lambda x: "Todas" if x == "Todas" else categories[x]["name"],
+            key="filter_category_select"
         )
     
     with col2:
         all_subjects = sorted(set(ch["subject"] for ch in channels))
         filter_subject = st.selectbox(
             "Filtrar por Matéria",
-            options=["Todas"] + all_subjects
+            options=["Todas"] + all_subjects,
+            key="filter_subject_select"
         )
     
     # Aplicar filtros
@@ -374,13 +387,16 @@ def manage_channels():
         col1, col2 = st.columns(2)
         with col1:
             with st.form(key=f"edit_channel_{channel['id']}"):
-                new_name = st.text_input("Nome", channel["name"])
-                new_subject = st.text_input("Matéria", channel["subject"])
+                new_name = st.text_input("Nome", channel["name"],
+                                        key=f"edit_channel_name_input_{channel['id']}")
+                new_subject = st.text_input("Matéria", channel["subject"],
+                                           key=f"edit_channel_subject_input_{channel['id']}")
                 new_category = st.selectbox(
                     "Categoria",
                     options=list(categories.keys()),
                     index=list(categories.keys()).index(channel["category"]),
-                    format_func=lambda x: categories[x]["name"]
+                    format_func=lambda x: categories[x]["name"],
+                    key=f"edit_channel_category_select_{channel['id']}"
                 )
                 
                 if st.form_submit_button("Salvar Alterações", use_container_width=True):
