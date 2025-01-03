@@ -205,6 +205,19 @@ def main():
     
     st.markdown("<h1 class='netflix-title'>Studyflix</h1>", unsafe_allow_html=True)
     
+    # Mostrar categorias em cards
+    for cat_id, category in categories.items():
+        with st.container():
+            st.markdown(f"""
+            <div class='category-card'>
+                <h3>{category['name']}</h3>
+                <p>{category['description']}</p>
+                <a href="?page=3_📚_Categoria&categoria={cat_id}" target="_self">
+                    <button>Ver Canais</button>
+                </a>
+            </div>
+            """, unsafe_allow_html=True)
+    
     # Mostrar canais em destaque
     featured_channels = [c for c in data.get("featured_channels", []) if c.get("featured", False)]
     if featured_channels:
