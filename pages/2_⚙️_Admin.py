@@ -88,21 +88,22 @@ def manage_categories():
     st.header("Gerenciar Categorias")
     channels_data = load_channels()
     
-    # Lista de categorias disponíveis
-    AVAILABLE_CATEGORIES = {
-        "vestibular": {
-            "name": "Vestibular",
-            "description": "Canais focados em preparação para vestibular"
-        },
-        "engenharia": {
-            "name": "Engenharia",
-            "description": "Canais sobre engenharia e tecnologia"
-        },
-        "informatica": {
-            "name": "Informática",
-            "description": "Canais sobre programação e computação"
+    # Carregar categorias do state ou inicializar com padrão
+    if 'categories' not in st.session_state:
+        st.session_state.categories = {
+            "vestibular": {
+                "name": "Vestibular",
+                "description": "Canais focados em preparação para vestibular"
+            },
+            "engenharia": {
+                "name": "Engenharia",
+                "description": "Canais sobre engenharia e tecnologia"
+            },
+            "informatica": {
+                "name": "Informática",
+                "description": "Canais sobre programação e computação"
+            }
         }
-    }
     
     # Adicionar nova categoria
     with st.expander("Adicionar Nova Categoria"):
@@ -113,8 +114,8 @@ def manage_categories():
             
             if st.form_submit_button("Adicionar Categoria"):
                 if cat_id and cat_name:
-                    if cat_id not in AVAILABLE_CATEGORIES:
-                        AVAILABLE_CATEGORIES[cat_id] = {
+                    if cat_id not in st.session_state.categories:
+                        st.session_state.categories[cat_id] = {
                             "name": cat_name,
                             "description": cat_desc
                         }
@@ -126,7 +127,9 @@ def manage_categories():
                     st.error("ID e Nome são obrigatórios")
     
     # Mostrar e gerenciar categorias existentes
-    for cat_id, category in AVAILABLE_CATEGORIES.items():
+    categories_to_remove = []  # Lista para armazenar categorias a serem removidas
+    
+    for cat_id, category in st.session_state.categories.items():
         with st.expander(f"{category['name']} - {category['description']}"):
             col1, col2 = st.columns([3, 1])
             
@@ -135,7 +138,7 @@ def manage_categories():
                 new_desc = st.text_area("Descrição", category["description"], key=f"desc_{cat_id}")
                 
                 if st.button("Salvar Alterações", key=f"save_{cat_id}"):
-                    AVAILABLE_CATEGORIES[cat_id] = {
+                    st.session_state.categories[cat_id] = {
                         "name": new_name,
                         "description": new_desc
                     }
@@ -153,7 +156,7 @@ def manage_categories():
                     if has_channels:
                         st.error("Não é possível remover uma categoria com canais. Remova os canais primeiro.")
                     else:
-                        AVAILABLE_CATEGORIES.pop(cat_id)
+                        categories_to_remove.append(cat_id)
                         st.success("Categoria removida!")
                         st.rerun()
             
@@ -175,6 +178,10 @@ def manage_categories():
                             st.rerun()
             else:
                 st.info("Nenhum canal nesta categoria.")
+    
+    # Remover categorias marcadas para remoção
+    for cat_id in categories_to_remove:
+        del st.session_state.categories[cat_id]
 
 def manage_channels():
     st.header("Gerenciar Canais")
@@ -186,19 +193,27 @@ def manage_channels():
         channel_url = st.text_input("URL do Canal")
         
         # Opção para usar matéria existente ou nova
-        use_existing_subject = st.checkbox("Usar matéria existente")
+        use_existing_subject = st.checkbox("Usar matéria existente", key="use_existing_subject")
         
-        if use_existing_subject:
-            existing_subjects = get_unique_subjects(channels_data)
-            if existing_subjects:
-                subject = st.selectbox("Matéria", options=existing_subjects)
-            else:
-                st.warning("Nenhuma matéria cadastrada ainda")
-                subject = st.text_input("Nova Matéria")
+        # Carregar matérias existentes
+        existing_subjects = get_unique_subjects(channels_data)
+        
+        if use_existing_subject and existing_subjects:
+            subject = st.selectbox(
+                "Matéria",
+                options=existing_subjects,
+                key="subject_select"
+            )
         else:
-            subject = st.text_input("Nova Matéria")
+            if use_existing_subject:
+                st.info("Nenhuma matéria cadastrada ainda")
+            subject = st.text_input("Nova Matéria", key="new_subject")
         
-        category = st.selectbox("Categoria", ["vestibular", "engenharia", "informatica"])
+        category = st.selectbox(
+            "Categoria",
+            options=list(st.session_state.categories.keys()),
+            format_func=lambda x: st.session_state.categories[x]["name"]
+        )
         is_featured = st.checkbox("Canal em Destaque?")
         
         submitted = st.form_submit_button("Adicionar Canal")
