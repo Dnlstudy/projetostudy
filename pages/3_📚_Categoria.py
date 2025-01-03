@@ -1,4 +1,5 @@
 import streamlit as st
+import webbrowser
 from utils.file_utils import load_channels
 
 # Configuração da página
@@ -44,13 +45,15 @@ def main():
     categories = data.get("categories", {})
     
     # Verificar se há uma categoria selecionada
-    if "selected_category" not in st.session_state:
+    query_params = st.experimental_get_query_params()
+    category_id = query_params.get("category", [None])[0]
+    
+    if not category_id:
         st.error("Nenhuma categoria selecionada!")
         if st.button("Voltar para página inicial"):
             st.switch_page("Home.py")
         return
     
-    category_id = st.session_state.selected_category
     category = categories.get(category_id)
     
     if not category:
@@ -93,7 +96,7 @@ def main():
                 </div>
                 """, unsafe_allow_html=True)
                 if st.button("Ver Canal", key=f"btn_{channel['id']}"):
-                    st.switch_page(f"https://youtube.com/channel/{channel['id']}")
+                    webbrowser.open(f"https://youtube.com/channel/{channel['id']}")
 
 if __name__ == "__main__":
     main()

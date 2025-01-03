@@ -81,7 +81,9 @@ def main():
                 use_container_width=True
             ):
                 st.session_state.selected_category = cat_id
-                st.switch_page("pages/3_📚_Categoria.py")
+                st.experimental_set_query_params({"category": cat_id})
+                st.experimental_write_client_data({"category": cat_id})
+                st.refresh()
     
     # Banner principal
     if "banners" in data and "cover" in data["banners"]:
@@ -120,7 +122,7 @@ def main():
                 </div>
                 """, unsafe_allow_html=True)
                 if st.button("Ver Canal", key=f"btn_{channel['id']}"):
-                    st.switch_page(f"https://youtube.com/channel/{channel['id']}")
+                    webbrowser.open(f"https://youtube.com/channel/{channel['id']}")
 
 if __name__ == "__main__":
     main()
