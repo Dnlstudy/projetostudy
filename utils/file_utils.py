@@ -6,6 +6,7 @@ import os
 from dotenv import load_dotenv
 from datetime import datetime
 import streamlit as st
+import subprocess
 
 # Carrega as variáveis de ambiente
 load_dotenv()
@@ -89,6 +90,12 @@ def save_channels(channels_data):
             saved_data = json.load(f)
             if saved_data != channels_data:
                 raise ValueError("Verificação de dados falhou após salvar")
+        
+        # Fazer push das alterações para o GitHub
+        if git_push_changes('channels.json', 'update: atualização automática dos dados dos canais'):
+            st.success("Alterações salvas e enviadas para o GitHub")
+        else:
+            st.warning("Alterações salvas localmente, mas não foi possível enviar para o GitHub")
                 
     except Exception as e:
         st.error(f"Erro ao salvar dados: {str(e)}")
@@ -103,6 +110,24 @@ def save_channels(channels_data):
                 st.warning("Dados restaurados do backup após erro ao salvar")
             except Exception as backup_error:
                 st.error(f"Erro ao restaurar backup: {str(backup_error)}")
+
+def git_push_changes(file_path, commit_message):
+    """
+    Faz commit e push das alterações no arquivo para o GitHub.
+    """
+    try:
+        # Configura o git com as credenciais
+        subprocess.run(['git', 'config', 'user.email', st.secrets["GIT_EMAIL"]], cwd=BASE_DIR)
+        subprocess.run(['git', 'config', 'user.name', st.secrets["GIT_USERNAME"]], cwd=BASE_DIR)
+        
+        # Add, commit e push
+        subprocess.run(['git', 'add', file_path], cwd=BASE_DIR)
+        subprocess.run(['git', 'commit', '-m', commit_message], cwd=BASE_DIR)
+        subprocess.run(['git', 'push', 'origin', 'master'], cwd=BASE_DIR)
+        return True
+    except Exception as e:
+        st.error(f"Erro ao fazer push para o GitHub: {str(e)}")
+        return False
 
 def verify_admin_credentials(username, password):
     """
