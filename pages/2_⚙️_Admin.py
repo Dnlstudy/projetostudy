@@ -255,11 +255,12 @@ def manage_channels():
             )
             
             if use_existing and existing_subjects:
-                subject = st.selectbox("Matéria", options=existing_subjects)
+                subject = st.selectbox("Matéria Existente", options=existing_subjects)
             else:
                 subject = st.text_input(
                     "Nova Matéria",
-                    help="Digite o nome da matéria (ex: Matemática, Física)"
+                    help="Digite o nome da matéria (ex: Matemática, Física)",
+                    key="new_subject_input"  # Adicionando uma key única
                 )
         
         submit = st.form_submit_button("Adicionar Canal", use_container_width=True)
