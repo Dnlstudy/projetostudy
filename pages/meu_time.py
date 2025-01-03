@@ -35,36 +35,38 @@ def create_team_image(selected_professors_data):
     
     # Carregar fonte do sistema para garantir que funcione
     try:
-        # Tenta usar Arial Bold que é comum no Windows
-        font_title = ImageFont.truetype("arial.ttf", 120)  # Título ainda menor
-        font_text = ImageFont.truetype("arial.ttf", 24)   # Mantém o tamanho dos nomes
-        font_small = ImageFont.truetype("arial.ttf", 20)  # Mantém o tamanho das matérias
-    except:
+        # Usar diretamente nossa fonte Bebas Neue com tamanho MUITO maior
+        font_path = os.path.join(os.path.dirname(__file__), "assets", "BebasNeue-Regular.ttf")
+        font_title = ImageFont.truetype(font_path, 400)  # Tamanho MUITO maior
+        font_text = ImageFont.truetype(font_path, 32)
+        font_small = ImageFont.truetype(font_path, 24)
+    except Exception as e:
+        print(f"Erro ao carregar fonte: {e}")
+        # Se falhar, usar fonte do sistema
         try:
-            # Segunda tentativa com Bebas Neue
-            font_title = ImageFont.truetype("pages/assets/BebasNeue-Regular.ttf", 120)
-            font_text = ImageFont.truetype("pages/assets/BebasNeue-Regular.ttf", 24)
-            font_small = ImageFont.truetype("pages/assets/BebasNeue-Regular.ttf", 20)
+            font_title = ImageFont.truetype("arial.ttf", 400)
+            font_text = ImageFont.truetype("arial.ttf", 32)
+            font_small = ImageFont.truetype("arial.ttf", 24)
         except:
-            # Fallback para fonte padrão
+            # Último recurso: fonte padrão
             font_title = ImageFont.load_default()
             font_text = ImageFont.load_default()
             font_small = ImageFont.load_default()
     
     # Adicionar título
     title = "MEU TIME"
-    title_height = 200  # Menos espaço para o título
+    title_height = 400  # Muito mais espaço para o título gigante
     
     # Calcular posição do título
-    title_width = font_title.getlength(title) if hasattr(font_title, 'getlength') else len(title) * 70
+    title_width = font_title.getlength(title) if hasattr(font_title, 'getlength') else len(title) * 150
     title_x = (width - title_width) // 2  # Centralização mais precisa
-    title_y = 60
+    title_y = 80  # Um pouco mais pra baixo por causa do tamanho
     
     # Sombra do título com várias camadas para efeito mais dramático
-    shadow_offset = 10
+    shadow_offset = 15  # Sombra maior
     for offset in range(1, shadow_offset + 1):
         draw.text((title_x + offset, title_y + offset), title, 
-                 fill=(100 - offset * 10, 0, 0), font=font_title)
+                 fill=(100 - offset * 5, 0, 0), font=font_title)
     
     # Texto principal do título
     draw.text((title_x, title_y), title, 
