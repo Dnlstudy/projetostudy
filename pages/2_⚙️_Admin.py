@@ -157,7 +157,7 @@ def manage_categories():
                     if has_channels:
                         st.error("Não é possível remover uma categoria com canais. Remova os canais primeiro.")
                     else:
-                        del channels_data["categories"][cat_id]
+                        channels_data["categories"].pop(cat_id)
                         save_channels(channels_data)
                         st.success("Categoria removida!")
                         st.rerun()
@@ -194,10 +194,15 @@ def manage_channels():
         existing_subjects = get_unique_subjects(channels_data)
         
         # Seleção de categoria
+        categories = channels_data.get("categories", {})
+        if not categories:
+            st.error("Nenhuma categoria cadastrada. Por favor, adicione uma categoria primeiro.")
+            return
+            
         category = st.selectbox(
             "Categoria",
-            options=list(channels_data.get("categories", {}).keys()),
-            format_func=lambda x: channels_data.get("categories", {}).get(x, {}).get("name", x)
+            options=list(categories.keys()),
+            format_func=lambda x: categories[x]["name"]
         )
         
         # Opção para usar matéria existente ou criar nova
@@ -205,9 +210,12 @@ def manage_channels():
         
         if use_existing and existing_subjects:
             subject = st.selectbox("Selecionar Matéria", options=existing_subjects)
-        else:
+        elif not use_existing:
             subject = st.text_input("Nova Matéria")
-            
+        else:
+            st.info("Nenhuma matéria cadastrada ainda. Por favor, adicione uma nova matéria.")
+            subject = st.text_input("Nova Matéria")
+        
         submit_button = st.form_submit_button("Adicionar Canal")
         
         if submit_button:
