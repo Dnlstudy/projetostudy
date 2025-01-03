@@ -108,8 +108,8 @@ def display_channels(channels_data):
         # Título da matéria
         st.markdown(f'<h3 class="subject-title">{subject}</h3>', unsafe_allow_html=True)
         
-        # Início do carrossel
-        carousel_html = '<div class="channel-carousel">'
+        # Container para o carrossel
+        st.markdown('<div style="overflow-x: auto; white-space: nowrap; padding: 10px 0;">', unsafe_allow_html=True)
         
         # Adicionar cards dos canais
         for channel in channels:
@@ -117,18 +117,23 @@ def display_channels(channels_data):
             thumbnail = channel.get("thumbnail", "")
             title = channel.get("name", "")
             
-            carousel_html += f'''
-                <a href="https://youtube.com/channel/{channel_id}" target="_blank" class="channel-card">
-                    <img src="{thumbnail}" alt="{title}">
-                    <div class="title">{title}</div>
-                </a>
-            '''
+            # Card individual
+            st.markdown(
+                f'''
+                <div style="display: inline-block; width: 200px; margin-right: 15px; vertical-align: top;">
+                    <a href="https://youtube.com/channel/{channel_id}" target="_blank" style="text-decoration: none;">
+                        <img src="{thumbnail}" style="width: 100%; border-radius: 8px; aspect-ratio: 16/9; object-fit: cover;">
+                        <p style="color: white; margin-top: 8px; font-size: 14px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.2; height: 2.4em;">
+                            {title}
+                        </p>
+                    </a>
+                </div>
+                ''',
+                unsafe_allow_html=True
+            )
         
-        # Fechar carrossel
-        carousel_html += '</div>'
-        
-        # Renderizar todo o carrossel de uma vez
-        st.markdown(carousel_html, unsafe_allow_html=True)
+        # Fechar container do carrossel
+        st.markdown('</div>', unsafe_allow_html=True)
 
 def main():
     # Carregar dados
