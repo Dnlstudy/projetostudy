@@ -231,6 +231,38 @@
             "category": "vestibular",
             "thumbnail": "https://yt3.ggpht.com/cDgb0f-_rKVqRFbS2LF2mcPwz2K1lzXvpk_nVnav2gMBYlvasvt1Y8lVvqnqBrba3-oDqNiLkw=s800-c-k-c0x00ffffff-no-rj",
             "featured": false
+        },
+        {
+            "id": "UCnl2MmWuTeweML5-ZHdd7tg",
+            "name": "Professor Igor Química",
+            "subject": "Química",
+            "category": "vestibular",
+            "thumbnail": "https://yt3.ggpht.com/M096koDHSq_1n9z4HkMwkNg_Q6flXasgQb4mfvliclJt-h0Yzg6VFLjQQ6QqCljuAi-Bbtoy=s800-c-k-c0x00ffffff-no-rj",
+            "featured": false
+        },
+        {
+            "id": "UCz9r1I9UZiSI78wqqUNyrxw",
+            "name": "Prof Gabs",
+            "subject": "Matemática",
+            "category": "vestibular",
+            "thumbnail": "https://yt3.ggpht.com/e1wefLtsmYj-Aq9fqB_ITAuORbhnoZ9Lfvnz0zGHbVtnKAizWjUBRJJRZH2HaWOqWd-IF_8GpWA=s800-c-k-c0x00ffffff-no-rj",
+            "featured": false
+        },
+        {
+            "id": "UCFIsRGd-TL4mp35x4nq5COw",
+            "name": "Professor Pinguim | Física",
+            "subject": "Física",
+            "category": "vestibular",
+            "thumbnail": "https://yt3.ggpht.com/XN_aY_utNxqEB9k1I2KZHc1hsF3aUSdgz22lDFPAmFEZeEbRqdDVyYRfYcWGS3MUyhoSW77q7Q=s800-c-k-c0x00ffffff-no-rj",
+            "featured": false
+        },
+        {
+            "id": "UCHqTiCfWd6NCeXuRrD8ODAA",
+            "name": "Marcelão da Química",
+            "subject": "Química",
+            "category": "vestibular",
+            "thumbnail": "https://yt3.ggpht.com/srmVJdv8dx--wgILmmxoU7gHcr99RqcuiFiZ3KIbMYjMNsL4JfKCUM1elvppBsuxph3hh5e6Aw=s800-c-k-c0x00ffffff-no-rj",
+            "featured": false
         }
     ],
     "categories": {
