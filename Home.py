@@ -101,64 +101,144 @@ def display_channels(channels_data):
             channels_by_subject[subject] = []
         channels_by_subject[subject].append(channel)
     
-    # CSS para grid com scroll horizontal
+    # CSS para o carrossel
     st.write("""
         <style>
-            .channel-grid {
-                display: grid;
-                grid-auto-flow: column;
-                grid-auto-columns: 320px;
-                gap: 1rem;
+            .subject-container {
+                margin: 2rem 0;
+            }
+            
+            .subject-title {
+                color: #E50914;
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 1rem;
+            }
+            
+            .carousel {
+                position: relative;
+                width: 100%;
+                padding: 0 2rem;
+            }
+            
+            .channel-list {
+                display: flex;
                 overflow-x: auto;
+                scroll-behavior: smooth;
+                gap: 1rem;
                 padding: 1rem 0;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+            
+            .channel-list::-webkit-scrollbar {
+                display: none;
             }
             
             .channel-card {
+                flex: 0 0 280px;
                 text-decoration: none;
-                display: block;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 8px;
+                padding: 0.5rem;
+                transition: transform 0.2s;
+            }
+            
+            .channel-card:hover {
+                transform: scale(1.05);
+                background: rgba(255, 255, 255, 0.1);
             }
             
             .channel-card img {
                 width: 100%;
-                border-radius: 8px;
                 aspect-ratio: 16/9;
                 object-fit: cover;
+                border-radius: 4px;
             }
             
             .channel-title {
                 color: white;
-                margin-top: 8px;
                 font-size: 14px;
+                margin-top: 0.5rem;
                 text-align: center;
             }
             
+            .nav-button {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 40px;
+                height: 40px;
+                background: rgba(229, 9, 20, 0.9);
+                border: none;
+                border-radius: 50%;
+                color: white;
+                font-size: 20px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10;
+                transition: background-color 0.2s;
+            }
+            
+            .nav-button:hover {
+                background: rgb(229, 9, 20);
+            }
+            
+            .nav-prev {
+                left: 0;
+            }
+            
+            .nav-next {
+                right: 0;
+            }
+            
             @media (max-width: 768px) {
-                .channel-grid {
-                    grid-auto-columns: 280px;
+                .channel-card {
+                    flex: 0 0 240px;
                 }
             }
         </style>
+        
+        <script>
+            function scrollCarousel(containerId, direction) {
+                const container = document.getElementById(containerId);
+                const scrollAmount = container.offsetWidth * (direction === 'next' ? 0.8 : -0.8);
+                container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            }
+        </script>
     """, unsafe_allow_html=True)
     
     # Exibir canais agrupados por matéria em ordem alfabética
     for subject in sorted(channels_by_subject.keys()):
         channels = channels_by_subject[subject]
         
-        # Título da matéria
-        st.write(f'<h3 class="subject-title">{subject}</h3>', unsafe_allow_html=True)
+        # Container da matéria
+        st.write(f'''
+            <div class="subject-container">
+                <h3 class="subject-title">{subject}</h3>
+                <div class="carousel">
+                    <button class="nav-button nav-prev" onclick="scrollCarousel('carousel-{subject.lower()}', 'prev')">‹</button>
+                    <div class="channel-list" id="carousel-{subject.lower()}">
+        ''', unsafe_allow_html=True)
         
-        # Grid de cards com scroll horizontal
-        html = '<div class="channel-grid">'
+        # Renderizar cards dos canais
         for channel in channels:
-            html += f'''
-                <a href="https://youtube.com/channel/{channel["id"]}" target="_blank" class="channel-card">
-                    <img src="{channel["thumbnail"]}" alt="{channel["name"]}">
-                    <div class="channel-title">{channel["name"]}</div>
+            st.write(f'''
+                <a href="https://youtube.com/channel/{channel['id']}" class="channel-card" target="_blank">
+                    <img src="{channel['thumbnail']}" alt="{channel['name']}">
+                    <div class="channel-title">{channel['name']}</div>
                 </a>
-            '''
-        html += '</div>'
+            ''', unsafe_allow_html=True)
         
-        st.write(html, unsafe_allow_html=True)
+        # Fechar containers
+        st.write('''
+                    </div>
+                    <button class="nav-button nav-next" onclick="scrollCarousel('carousel-{subject.lower()}', 'next')">›</button>
+                </div>
+            </div>
+        ''', unsafe_allow_html=True)
 
 def main():
     # Carregar dados
