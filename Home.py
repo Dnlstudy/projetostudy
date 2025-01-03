@@ -109,10 +109,7 @@ def display_channels(channels_data):
         st.markdown(f'<h3 class="subject-title">{subject}</h3>', unsafe_allow_html=True)
         
         # Início do carrossel
-        st.write(
-            f'<div class="channel-carousel">',
-            unsafe_allow_html=True
-        )
+        carousel_html = '<div class="channel-carousel">'
         
         # Adicionar cards dos canais
         for channel in channels:
@@ -120,18 +117,18 @@ def display_channels(channels_data):
             thumbnail = channel.get("thumbnail", "")
             title = channel.get("name", "")
             
-            st.write(
-                f'''
+            carousel_html += f'''
                 <a href="https://youtube.com/channel/{channel_id}" target="_blank" class="channel-card">
                     <img src="{thumbnail}" alt="{title}">
                     <div class="title">{title}</div>
                 </a>
-                ''',
-                unsafe_allow_html=True
-            )
+            '''
         
         # Fechar carrossel
-        st.write('</div>', unsafe_allow_html=True)
+        carousel_html += '</div>'
+        
+        # Renderizar todo o carrossel de uma vez
+        st.markdown(carousel_html, unsafe_allow_html=True)
 
 def main():
     # Carregar dados
