@@ -22,8 +22,8 @@ def get_image_from_url(url):
 
 def create_team_image(selected_professors_data):
     # Configurações da imagem
-    width = 1200
-    height = 1200
+    width = 1920  # Aumentado de 1200 para 1920 (Full HD)
+    height = 1920  # Mantendo quadrado
     background_color = (18, 18, 18)  # Quase preto
     card_color = (30, 30, 30)  # Cinza escuro
     text_color = (255, 255, 255)  # Branco
@@ -198,7 +198,7 @@ def main():
         if st.button("Gerar Imagem do Time"):
             selected_data = [professors_dict[name] for name in selected_professors]
             image = create_team_image(selected_data)
-            st.image(image, caption="Seu Time de Professores")
+            st.image(image, caption="Seu Time de Professores", use_column_width=False)  # Desativando redimensionamento automático
             
             # Botão para download
             st.markdown(
