@@ -93,23 +93,28 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def display_channels(channels_data):
-    # Remove padding padrão do Streamlit
+    # Remove padding padrão do Streamlit e força tema escuro
     st.markdown("""
         <style>
-            .element-container {
+            /* Reset Streamlit */
+            .element-container, .stMarkdown, div[data-testid="stHorizontalBlock"], 
+            .stDeployButton, .main, .st-emotion-cache-1y4p8pa,
+            .st-emotion-cache-1wrcr25, .st-emotion-cache-6qob1r,
+            .st-emotion-cache-ue6h4q, .st-emotion-cache-eczf16 {
                 padding: 0 !important;
+                margin: 0 !important;
+                background-color: transparent !important;
+                color: white !important;
             }
-            .stMarkdown {
-                background: transparent !important;
+            
+            /* Força tema escuro */
+            body, iframe {
+                background-color: rgb(14, 17, 23) !important;
             }
-            div[data-testid="stHorizontalBlock"] {
-                background: transparent !important;
-            }
-            iframe {
-                background: transparent !important;
-            }
-            body {
-                background: transparent !important;
+            
+            /* Esconde scrollbar padrão */
+            ::-webkit-scrollbar {
+                display: none !important;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -133,7 +138,7 @@ def display_channels(channels_data):
             scrollbar-width: none;
             -ms-overflow-style: none;
             scroll-behavior: smooth;
-            background: transparent !important;
+            background-color: transparent !important;
         }
         
         .scroll-container::-webkit-scrollbar {
@@ -144,15 +149,16 @@ def display_channels(channels_data):
             flex: 0 0 auto;
             width: 280px;
             text-decoration: none;
-            background: transparent !important;
+            background-color: transparent !important;
         }
         
         .channel-card img {
             width: 100%;
+            height: 157.5px; /* 280 * 9/16 */
             border-radius: 8px;
-            aspect-ratio: 16/9;
-            object-fit: cover;
+            object-fit: contain;
             transition: transform 0.2s;
+            background-color: transparent !important;
         }
         
         .channel-card:hover img {
@@ -177,6 +183,9 @@ def display_channels(channels_data):
             .channel-card {
                 width: 200px;
             }
+            .channel-card img {
+                height: 112.5px; /* 200 * 9/16 */
+            }
         }
     </style>
     """
@@ -189,14 +198,14 @@ def display_channels(channels_data):
         st.markdown(f'<h3 class="subject-title">{subject}</h3>', unsafe_allow_html=True)
         
         # Calcular altura baseada no número de linhas do título (2) + altura da imagem + padding
-        img_height = 280 * 9/16  # width * 9/16 para aspect ratio 16:9
+        img_height = 157.5  # Altura fixa da imagem
         title_height = 2 * 14 * 1.2  # 2 linhas * font-size * line-height
         total_height = img_height + title_height + 40  # +40 para padding e margem
         
         # Construir HTML do carrossel
         html = f'''
             {css}
-            <div style="background: transparent !important;">
+            <div style="background-color: transparent !important;">
                 <div class="scroll-container">
         '''
         
@@ -218,8 +227,12 @@ def display_channels(channels_data):
             </div>
         '''
         
-        # Renderizar usando components.html com altura calculada e sem scrolling
-        st.components.v1.html(html, height=int(total_height))
+        # Renderizar usando components.html com altura calculada
+        st.components.v1.html(
+            html,
+            height=int(total_height),
+            scrolling=False
+        )
 
 def main():
     # Carregar dados
