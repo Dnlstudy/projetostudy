@@ -1,16 +1,16 @@
 # 📚 Studyflix
 
-Uma plataforma de estudo estilo Netflix que reúne os melhores canais educacionais do YouTube.
+Uma plataforma de estudo que reúne os melhores canais educacionais do YouTube.
 
 ## 🎯 Sobre o Projeto
 
-O Studyflix é uma plataforma inovadora que organiza conteúdo educacional do YouTube em um formato familiar e intuitivo, inspirado na Netflix. O projeto foi criado para ajudar estudantes a encontrarem conteúdo educacional de qualidade de forma organizada e agradável.
+O Studyflix é uma plataforma inovadora que organiza conteúdo educacional do YouTube em um formato familiar e intuitivo. O projeto foi criado para ajudar estudantes a encontrarem conteúdo educacional de qualidade de forma organizada e agradável.
 
 ### ✨ Características
 
 - 📝 Conteúdo organizado por categorias (Vestibular, Engenharia, Informática)
 - 📚 Divisão por matérias dentro de cada categoria
-- 🎨 Interface intuitiva inspirada na Netflix
+- 🎨 Interface intuitiva.
 - 🔍 Fácil navegação e descoberta de conteúdo
 - 🌙 Tema escuro para melhor experiência de uso
 
