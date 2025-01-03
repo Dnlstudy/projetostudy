@@ -102,10 +102,6 @@ def manage_categories():
             "informatica": {
                 "name": "Informática",
                 "description": "Canais sobre programação e computação"
-            },
-            "geografia": {
-                "name": "Geografia",
-                "description": "Canais sobre geografia e geopolítica"
             }
         }
         save_channels(channels_data)
@@ -190,55 +186,52 @@ def manage_channels():
     channels_data = load_channels()
     
     # Adicionar novo canal
-    with st.form("add_channel"):
+    with st.form("add_channel_form"):
         st.subheader("Adicionar Novo Canal")
         channel_url = st.text_input("URL do Canal")
         
         # Carregar matérias existentes
         existing_subjects = get_unique_subjects(channels_data)
         
-        # Opção para usar matéria existente
-        col1, col2 = st.columns(2)
-        with col1:
-            use_existing = st.checkbox("Usar matéria existente", key="use_existing")
-        
-        # Campo de matéria
-        if use_existing and existing_subjects:
-            subject = st.selectbox("Selecione a matéria", options=existing_subjects)
-        else:
-            if use_existing:
-                st.info("Nenhuma matéria cadastrada ainda")
-            subject = st.text_input("Nova matéria")
-        
-        # Selecionar categoria
+        # Seleção de categoria
         category = st.selectbox(
             "Categoria",
-            options=list(channels_data["categories"].keys()),
-            format_func=lambda x: channels_data["categories"][x]["name"]
+            options=list(channels_data.get("categories", {}).keys()),
+            format_func=lambda x: channels_data.get("categories", {}).get(x, {}).get("name", x)
         )
         
-        is_featured = st.checkbox("Canal em Destaque?")
+        # Opção para usar matéria existente ou criar nova
+        use_existing = st.checkbox("Usar matéria existente", value=True if existing_subjects else False)
         
-        if st.form_submit_button("Adicionar Canal"):
+        if use_existing and existing_subjects:
+            subject = st.selectbox("Selecionar Matéria", options=existing_subjects)
+        else:
+            subject = st.text_input("Nova Matéria")
+            
+        submit_button = st.form_submit_button("Adicionar Canal")
+        
+        if submit_button:
             if channel_url and subject:
-                channel_id = extract_channel_id(channel_url)
-                if channel_id:
-                    youtube = get_youtube_client()
-                    channel_info = get_channel_info(youtube, channel_id)
-                    
-                    if channel_info:
+                try:
+                    channel_id = extract_channel_id(channel_url)
+                    if channel_id:
                         # Verificar se o canal já existe
-                        existing_channels = [c for c in channels_data.get("featured_channels", []) 
-                                          if c.get("id") == channel_id]
+                        existing_channels = channels_data.get("featured_channels", [])
+                        if any(ch.get("id") == channel_id for ch in existing_channels):
+                            st.error("Este canal já está cadastrado!")
+                            return
                         
-                        if not existing_channels:
+                        youtube = get_youtube_client()
+                        channel_info = get_channel_info(youtube, channel_id)
+                        
+                        if channel_info:
                             new_channel = {
                                 "id": channel_id,
                                 "name": channel_info["title"],
-                                "thumbnail": channel_info["thumbnail"],
                                 "subject": subject,
                                 "category": category,
-                                "featured": is_featured
+                                "thumbnail": channel_info["thumbnail"],
+                                "featured": False
                             }
                             
                             if "featured_channels" not in channels_data:
@@ -246,16 +239,16 @@ def manage_channels():
                             
                             channels_data["featured_channels"].append(new_channel)
                             save_channels(channels_data)
-                            st.success(f"Canal '{channel_info['title']}' adicionado com sucesso!")
+                            st.success("Canal adicionado com sucesso!")
                             st.rerun()
                         else:
-                            st.error("Este canal já está cadastrado!")
+                            st.error("Não foi possível obter informações do canal")
                     else:
-                        st.error("Não foi possível obter informações do canal")
-                else:
-                    st.error("URL do canal inválida")
+                        st.error("URL do canal inválida")
+                except Exception as e:
+                    st.error(f"Erro ao adicionar canal: {str(e)}")
             else:
-                st.error("URL do canal e matéria são obrigatórios")
+                st.error("Preencha todos os campos obrigatórios")
 
 def manage_banners():
     st.header("Gerenciar Banners")
