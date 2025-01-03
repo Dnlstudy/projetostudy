@@ -89,6 +89,10 @@
         "informatica": {
             "name": "Informática",
             "description": "Canais sobre programação e computação"
+        },
+        "med": {
+            "name": "medicina",
+            "description": "Canais sobre medicina"
         }
     },
     "banners": {
