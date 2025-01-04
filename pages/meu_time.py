@@ -52,7 +52,7 @@ def create_team_image(selected_professors_data):
         for path in font_paths:
             try:
                 font_title = ImageFont.truetype(path, 120)  # Mantendo título
-                font_text = ImageFont.truetype(path, 12)    # Diminuindo nome do canal
+                font_text = ImageFont.truetype(path, 22)    # Diminuindo nome do canal
                 font_small = ImageFont.truetype(path, 26)   # Diminuindo matéria
                 font_credits = ImageFont.truetype(path, 24) # Fonte menor para créditos
                 font_loaded = True
