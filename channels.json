@@ -343,6 +343,30 @@
             "category": "vestibular",
             "thumbnail": "https://yt3.ggpht.com/5fFgHLntPR7D4N8IcziU_MTv1Azh94ULMf8VER8yDp7cRZHK_0-TDijVjdcPMFKuJiGWuClMhg=s800-c-k-c0x00ffffff-no-rj",
             "featured": false
+        },
+        {
+            "id": "UCUrBbQTdoJQsFy4VOdVQbHg",
+            "name": "MedTwo",
+            "subject": "Medicina",
+            "category": "Vlogs",
+            "thumbnail": "https://yt3.ggpht.com/p6raj64ZHVvMvQ-VAENDJb_utSgOq6bjWxoMBqTzGTcy1PaLYkSC2aJIwo9jcMR24zFmvt81pKQ=s800-c-k-c0x00ffffff-no-rj",
+            "featured": false
+        },
+        {
+            "id": "UC0o49ts5HZA0OERbIVedHyw",
+            "name": "Mediários",
+            "subject": "Medicina",
+            "category": "Vlogs",
+            "thumbnail": "https://yt3.ggpht.com/ytc/AIdro_kJLNU9STQwIe4D8REcp82iFVifEbO_wB8UZdDgfCbsGF0=s800-c-k-c0x00ffffff-no-rj",
+            "featured": false
+        },
+        {
+            "id": "UCOmPpcRzZytAwKScrVZ3e9A",
+            "name": "Cauan Czy Vlogs",
+            "subject": "Militares",
+            "category": "Vlogs",
+            "thumbnail": "https://yt3.ggpht.com/AXYL-ZgHpwb2GrKF2LB4oOrAgO2rKMKz5zp4hgxaJM6nruy13bnbNDLH57epy9GBrLavIqCKlTc=s800-c-k-c0x00ffffff-no-rj",
+            "featured": false
         }
     ],
     "categories": {
@@ -357,6 +381,10 @@
         "mat": {
             "name": "Matemática - Ensino Superior",
             "description": "Canais focados em matemática para Ensino Superior"
+        },
+        "Vlogs": {
+            "name": "Vlogs",
+            "description": "Canais de vlogs que podem auxiliar no processo de estudos"
         }
     },
     "banners": {
