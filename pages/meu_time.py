@@ -35,30 +35,47 @@ def create_team_image(selected_professors_data):
     
     # Carregar fonte do sistema para garantir que funcione
     try:
-        # Usar nossa fonte Bebas Neue
-        font_path = os.path.join(os.path.dirname(__file__), "assets", "BebasNeue-Regular.ttf")
-        font_title = ImageFont.truetype(font_path, 180)  # Voltando para 180px
-        font_text = ImageFont.truetype(font_path, 32)
-        font_small = ImageFont.truetype(font_path, 24)
+        # Lista de fontes para tentar em ordem
+        font_paths = [
+            # Linux
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",  # Comum em Ubuntu
+            "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf",          # Comum em Debian
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",         # Comum em várias distros
+            # Windows
+            "C:/Windows/Fonts/Arial.ttf",
+            "arial.ttf",
+            # Nossa fonte local
+            os.path.join(os.path.dirname(__file__), "assets", "BebasNeue-Regular.ttf")
+        ]
+        
+        font_loaded = False
+        for path in font_paths:
+            try:
+                font_title = ImageFont.truetype(path, 400)  # Aumentando MUITO o tamanho
+                font_text = ImageFont.truetype(path, 32)
+                font_small = ImageFont.truetype(path, 24)
+                font_loaded = True
+                print(f"Fonte carregada com sucesso: {path}")  # Debug
+                break
+            except Exception as e:
+                print(f"Erro ao carregar fonte {path}: {e}")  # Debug
+                continue
+        
+        if not font_loaded:
+            raise Exception("Nenhuma fonte pôde ser carregada")
+            
     except Exception as e:
-        print(f"Erro ao carregar fonte: {e}")
-        # Se falhar, usar fonte do sistema
-        try:
-            font_title = ImageFont.truetype("arial.ttf", 180)
-            font_text = ImageFont.truetype("arial.ttf", 32)
-            font_small = ImageFont.truetype("arial.ttf", 24)
-        except:
-            # Último recurso: fonte padrão
-            font_title = ImageFont.load_default()
-            font_text = ImageFont.load_default()
-            font_small = ImageFont.load_default()
+        print(f"Erro final ao carregar fonte: {e}")
+        font_title = ImageFont.load_default()
+        font_text = ImageFont.load_default()
+        font_small = ImageFont.load_default()
     
     # Adicionar título
     title = "MEU TIME"
-    title_height = 200  # Voltando para 200px
+    title_height = 400  # Mais espaço para o título gigante
     
     # Calcular largura do título manualmente
-    title_width = len(title) * 100  # Ajustado para o novo tamanho
+    title_width = len(title) * 200  # Estimativa mais agressiva
     title_x = (width - title_width) // 2
     title_y = 60
     
