@@ -51,9 +51,9 @@ def create_team_image(selected_professors_data):
         font_loaded = False
         for path in font_paths:
             try:
-                font_title = ImageFont.truetype(path, 250)  # Reduzido para 250px
-                font_text = ImageFont.truetype(path, 36)    # Aumentado um pouco
-                font_small = ImageFont.truetype(path, 28)   # Aumentado um pouco
+                font_title = ImageFont.truetype(path, 120)  # MUITO reduzido
+                font_text = ImageFont.truetype(path, 24)    # Reduzido
+                font_small = ImageFont.truetype(path, 20)   # Reduzido
                 font_loaded = True
                 print(f"Fonte carregada com sucesso: {path}")  # Debug
                 break
@@ -72,32 +72,32 @@ def create_team_image(selected_professors_data):
     
     # Adicionar título
     title = "MEU TIME"
-    title_height = 300  # Reduzido para 300px
+    title_height = 180  # Reduzido
     
     # Calcular largura do título manualmente
-    title_width = len(title) * 150  # Reduzido para 150px por letra
+    title_width = len(title) * 70  # MUITO reduzido
     title_x = (width - title_width) // 2
-    title_y = 50  # Um pouco mais pra cima
+    title_y = 40  # Um pouco mais pra cima
     
     # Sombra do título com várias camadas para efeito mais dramático
-    shadow_offset = 12  # Reduzido para 12px
+    shadow_offset = 8  # Reduzido
     for offset in range(1, shadow_offset + 1):
         draw.text((title_x + offset, title_y + offset), title, 
-                 fill=(100 - offset * 7, 0, 0), font=font_title)
+                 fill=(100 - offset * 10, 0, 0), font=font_title)
     
     # Texto principal do título
     draw.text((title_x, title_y), title, 
               fill=netflix_red, font=font_title)
     
     # Linha de destaque abaixo do título
-    accent_line_height = 6  # Reduzido para 6px
+    accent_line_height = 4  # Reduzido
     draw.rectangle([(0, title_height), (width, title_height + accent_line_height)], 
                   fill=netflix_red)
     
     # Organizar professores em grid
-    card_width = 300
-    card_height = 250
-    margin = 45
+    card_width = 250
+    card_height = 200
+    margin = 35
     start_y = title_height + accent_line_height + margin
     
     # Calcular posições para centralizar os cards
@@ -113,59 +113,59 @@ def create_team_image(selected_professors_data):
         
         # Desenhar card com borda vermelha
         draw.rectangle([(x, y), (x + card_width, y + card_height)], 
-                      fill=card_color, outline=netflix_red, width=3)
+                      fill=card_color, outline=netflix_red, width=2)
         
         try:
             # Carregar e redimensionar thumbnail
             thumb = get_image_from_url(prof_data["thumbnail"])
-            thumb = thumb.resize((160, 160))
+            thumb = thumb.resize((120, 120))
             
             # Criar máscara circular
-            mask = Image.new('L', (160, 160), 0)
+            mask = Image.new('L', (120, 120), 0)
             mask_draw = ImageDraw.Draw(mask)
-            mask_draw.ellipse((0, 0, 160, 160), fill=255)
+            mask_draw.ellipse((0, 0, 120, 120), fill=255)
             
             # Aplicar máscara
-            output = Image.new('RGBA', (160, 160), (0, 0, 0, 0))
+            output = Image.new('RGBA', (120, 120), (0, 0, 0, 0))
             output.paste(thumb, (0, 0))
             
             # Calcular posição centralizada para a imagem
-            thumb_x = x + (card_width - 160) // 2
-            thumb_y = y + 20
+            thumb_x = x + (card_width - 120) // 2
+            thumb_y = y + 15
             
             # Colar na imagem principal
             image.paste(output, (thumb_x, thumb_y), mask)
         except:
             # Se falhar ao carregar a imagem, desenhar um círculo placeholder
             center_x = x + card_width // 2
-            draw.ellipse((center_x - 80, y + 20, center_x + 80, y + 180), 
+            draw.ellipse((center_x - 60, y + 15, center_x + 60, y + 135), 
                         fill=netflix_red, outline=text_color)
         
         # Truncar nomes muito longos
         name = prof_data["name"]
-        if len(name) > 22:  
-            name = name[:19] + "..."  
+        if len(name) > 18:  
+            name = name[:15] + "..."  
             
         subject = prof_data["subject"]
-        if len(subject) > 18:  
-            subject = subject[:15] + "..."  
+        if len(subject) > 15:  
+            subject = subject[:12] + "..."  
         
         # Calcular posições para centralizar os textos
-        name_width = font_text.getlength(name) if hasattr(font_text, 'getlength') else len(name) * 11  
-        subject_width = font_small.getlength(subject) if hasattr(font_small, 'getlength') else len(subject) * 9  
+        name_width = font_text.getlength(name) if hasattr(font_text, 'getlength') else len(name) * 9  
+        subject_width = font_small.getlength(subject) if hasattr(font_small, 'getlength') else len(subject) * 7  
         
         name_x = x + (card_width - name_width) // 2
         subject_x = x + (card_width - subject_width) // 2
         
-        draw.text((name_x, y + 190), name, 
+        draw.text((name_x, y + 150), name, 
                  fill=text_color, font=font_text)
-        draw.text((subject_x, y + 220), subject, 
+        draw.text((subject_x, y + 175), subject, 
                  fill=text_color, font=font_small)
     
     # Adicionar créditos na parte inferior com cor mais visível
     credits = "Criado por @danielstudytwt"
-    credits_width = len(credits) * 7
-    draw.text((width - credits_width - 100, height - 35), credits,  # Movido 100px da borda direita
+    credits_width = len(credits) * 5
+    draw.text((width - credits_width - 100, height - 30), credits,  # Movido 100px da borda direita
               fill=(180, 180, 180), font=font_small)
     return image
 
@@ -208,7 +208,7 @@ def main():
         for idx, prof_name in enumerate(selected_professors):
             prof_data = professors_dict[prof_name]
             with cols[idx % 3]:
-                st.image(prof_data["thumbnail"], width=100)
+                st.image(prof_data["thumbnail"], width=80)
                 st.write(f"**{prof_data['name']}**")
                 st.write(f"Matéria: {prof_data['subject']}")
         
