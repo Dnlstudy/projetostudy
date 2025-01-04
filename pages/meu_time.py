@@ -52,9 +52,9 @@ def create_team_image(selected_professors_data):
         for path in font_paths:
             try:
                 font_title = ImageFont.truetype(path, 120)  # Mantendo título
-                font_text = ImageFont.truetype(path, 32)    # Diminuindo nome do canal
+                font_text = ImageFont.truetype(path, 25)    # Diminuindo nome do canal
                 font_small = ImageFont.truetype(path, 26)   # Diminuindo matéria
-                font_credits = ImageFont.truetype(path, 24) # Fonte menor para créditos
+                font_credits = ImageFont.truetype(path, 14) # Fonte menor para créditos
                 font_loaded = True
                 print(f"Fonte carregada com sucesso: {path}")
                 break
@@ -210,7 +210,7 @@ def main():
         for idx, prof_name in enumerate(selected_professors):
             prof_data = professors_dict[prof_name]
             with cols[idx % 3]:
-                st.image(prof_data["thumbnail"], width=80)
+                st.image(prof_data["thumbnail"], width=180)
                 st.write(f"**{prof_data['name']}**")
                 st.write(f"Matéria: {prof_data['subject']}")
         
