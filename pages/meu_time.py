@@ -51,9 +51,9 @@ def create_team_image(selected_professors_data):
         font_loaded = False
         for path in font_paths:
             try:
-                font_title = ImageFont.truetype(path, 400)  # Aumentando MUITO o tamanho
-                font_text = ImageFont.truetype(path, 32)
-                font_small = ImageFont.truetype(path, 24)
+                font_title = ImageFont.truetype(path, 250)  # Reduzido para 250px
+                font_text = ImageFont.truetype(path, 36)    # Aumentado um pouco
+                font_small = ImageFont.truetype(path, 28)   # Aumentado um pouco
                 font_loaded = True
                 print(f"Fonte carregada com sucesso: {path}")  # Debug
                 break
@@ -72,25 +72,25 @@ def create_team_image(selected_professors_data):
     
     # Adicionar título
     title = "MEU TIME"
-    title_height = 400  # Mais espaço para o título gigante
+    title_height = 300  # Reduzido para 300px
     
     # Calcular largura do título manualmente
-    title_width = len(title) * 200  # Estimativa mais agressiva
+    title_width = len(title) * 150  # Reduzido para 150px por letra
     title_x = (width - title_width) // 2
-    title_y = 60
+    title_y = 50  # Um pouco mais pra cima
     
     # Sombra do título com várias camadas para efeito mais dramático
-    shadow_offset = 10
+    shadow_offset = 12  # Reduzido para 12px
     for offset in range(1, shadow_offset + 1):
         draw.text((title_x + offset, title_y + offset), title, 
-                 fill=(100 - offset * 8, 0, 0), font=font_title)
+                 fill=(100 - offset * 7, 0, 0), font=font_title)
     
     # Texto principal do título
     draw.text((title_x, title_y), title, 
               fill=netflix_red, font=font_title)
     
     # Linha de destaque abaixo do título
-    accent_line_height = 6  # Um pouco menor
+    accent_line_height = 6  # Reduzido para 6px
     draw.rectangle([(0, title_height), (width, title_height + accent_line_height)], 
                   fill=netflix_red)
     
