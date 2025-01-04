@@ -51,9 +51,10 @@ def create_team_image(selected_professors_data):
         font_loaded = False
         for path in font_paths:
             try:
-                font_title = ImageFont.truetype(path, 120)  # Mantendo título menor
-                font_text = ImageFont.truetype(path, 40)    # Voltando ao tamanho original
-                font_small = ImageFont.truetype(path, 32)   # Voltando ao tamanho original
+                font_title = ImageFont.truetype(path, 120)  # Mantendo título
+                font_text = ImageFont.truetype(path, 32)    # Diminuindo nome do canal
+                font_small = ImageFont.truetype(path, 26)   # Diminuindo matéria
+                font_credits = ImageFont.truetype(path, 24) # Fonte menor para créditos
                 font_loaded = True
                 print(f"Fonte carregada com sucesso: {path}")
                 break
@@ -69,6 +70,7 @@ def create_team_image(selected_professors_data):
         font_title = ImageFont.load_default()
         font_text = ImageFont.load_default()
         font_small = ImageFont.load_default()
+        font_credits = ImageFont.load_default()
     
     # Adicionar título
     title = "MEU TIME"
@@ -143,16 +145,16 @@ def create_team_image(selected_professors_data):
         
         # Truncar nomes muito longos
         name = prof_data["name"]
-        if len(name) > 20:  # Diminuindo limite
-            name = name[:17] + "..."
+        if len(name) > 16:  # Diminuindo ainda mais o limite
+            name = name[:13] + "..."
             
         subject = prof_data["subject"]
-        if len(subject) > 15:  # Diminuindo limite
-            subject = subject[:12] + "..."
+        if len(subject) > 12:  # Diminuindo ainda mais o limite
+            subject = subject[:9] + "..."
         
         # Calcular posições para centralizar os textos
-        name_width = font_text.getlength(name) if hasattr(font_text, 'getlength') else len(name) * 11
-        subject_width = font_small.getlength(subject) if hasattr(font_small, 'getlength') else len(subject) * 9
+        name_width = font_text.getlength(name) if hasattr(font_text, 'getlength') else len(name) * 9  # Ajustando multiplicador
+        subject_width = font_small.getlength(subject) if hasattr(font_small, 'getlength') else len(subject) * 7  # Ajustando multiplicador
         
         name_x = x + (card_width - name_width) // 2
         subject_x = x + (card_width - subject_width) // 2
@@ -165,8 +167,8 @@ def create_team_image(selected_professors_data):
     
     # Adicionar créditos na parte inferior com cor mais visível
     credits = "Criado por @danielstudytwt"
-    draw.text((20, height - 50), credits,  # Movido para a esquerda
-              fill=(180, 180, 180), font=font_small)
+    draw.text((20, height - 50), credits,
+              fill=(180, 180, 180), font=font_credits)  # Usando fonte menor para créditos
     return image
 
 def get_image_download_link(img, filename="meu_time.png", text="Baixar Imagem"):
