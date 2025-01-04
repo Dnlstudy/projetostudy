@@ -35,36 +35,38 @@ def create_team_image(selected_professors_data):
     
     # Carregar fonte do sistema para garantir que funcione
     try:
-        # Tentar fonte DejaVu que funcionou bem
-        font_title = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 300)  # Ajustado para 300px
-        font_text = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 40)   # Aumentado para 40px
-        font_small = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 32)  # Aumentado para 32px
-    except:
+        # Usar nossa fonte Bebas Neue
+        font_path = os.path.join(os.path.dirname(__file__), "assets", "BebasNeue-Regular.ttf")
+        font_title = ImageFont.truetype(font_path, 180)  # Voltando para 180px
+        font_text = ImageFont.truetype(font_path, 32)
+        font_small = ImageFont.truetype(font_path, 24)
+    except Exception as e:
+        print(f"Erro ao carregar fonte: {e}")
+        # Se falhar, usar fonte do sistema
         try:
-            # Tentar fonte Arial que é comum em Windows
-            font_title = ImageFont.truetype("arial.ttf", 300)
-            font_text = ImageFont.truetype("arial.ttf", 40)
-            font_small = ImageFont.truetype("arial.ttf", 32)
+            font_title = ImageFont.truetype("arial.ttf", 180)
+            font_text = ImageFont.truetype("arial.ttf", 32)
+            font_small = ImageFont.truetype("arial.ttf", 24)
         except:
-            # Se tudo falhar, usar fonte padrão
+            # Último recurso: fonte padrão
             font_title = ImageFont.load_default()
             font_text = ImageFont.load_default()
             font_small = ImageFont.load_default()
     
     # Adicionar título
     title = "MEU TIME"
-    title_height = 300  # Ajustado para o novo tamanho
+    title_height = 200  # Voltando para 200px
     
     # Calcular largura do título manualmente
-    title_width = len(title) * 150  # Ajustado para o novo tamanho
+    title_width = len(title) * 100  # Ajustado para o novo tamanho
     title_x = (width - title_width) // 2
-    title_y = 50  # Um pouco mais pra cima
+    title_y = 60
     
     # Sombra do título com várias camadas para efeito mais dramático
-    shadow_offset = 12  # Ajustado para o novo tamanho
+    shadow_offset = 10
     for offset in range(1, shadow_offset + 1):
         draw.text((title_x + offset, title_y + offset), title, 
-                 fill=(100 - offset * 7, 0, 0), font=font_title)
+                 fill=(100 - offset * 8, 0, 0), font=font_title)
     
     # Texto principal do título
     draw.text((title_x, title_y), title, 
