@@ -51,14 +51,14 @@ def create_team_image(selected_professors_data):
         font_loaded = False
         for path in font_paths:
             try:
-                font_title = ImageFont.truetype(path, 120)  # Mantendo fonte do título menor
-                font_text = ImageFont.truetype(path, 24)    # Mantendo fonte do texto menor
-                font_small = ImageFont.truetype(path, 20)   # Mantendo fonte pequena menor
+                font_title = ImageFont.truetype(path, 120)  # Mantendo título menor
+                font_text = ImageFont.truetype(path, 40)    # Voltando ao tamanho original
+                font_small = ImageFont.truetype(path, 32)   # Voltando ao tamanho original
                 font_loaded = True
-                print(f"Fonte carregada com sucesso: {path}")  # Debug
+                print(f"Fonte carregada com sucesso: {path}")
                 break
             except Exception as e:
-                print(f"Erro ao carregar fonte {path}: {e}")  # Debug
+                print(f"Erro ao carregar fonte {path}: {e}")
                 continue
         
         if not font_loaded:
@@ -95,10 +95,10 @@ def create_team_image(selected_professors_data):
                   fill=netflix_red)
     
     # Organizar professores em grid
-    card_width = 300  # Voltando ao tamanho original
-    card_height = 250  # Voltando ao tamanho original
-    margin = 45  # Voltando à margem original
-    start_y = title_height + accent_line_height + margin
+    card_width = 300  # Diminuindo para caber melhor
+    card_height = 280  # Diminuindo altura
+    margin = 40  # Diminuindo margem
+    start_y = title_height + accent_line_height + 30  # Diminuindo espaço inicial
     
     # Calcular posições para centralizar os cards
     total_width = (card_width * 3) + (margin * 2)
@@ -118,54 +118,54 @@ def create_team_image(selected_professors_data):
         try:
             # Carregar e redimensionar thumbnail
             thumb = get_image_from_url(prof_data["thumbnail"])
-            thumb = thumb.resize((160, 160))  # Voltando ao tamanho original
+            thumb = thumb.resize((180, 180))  # Ajustando tamanho da foto
             
             # Criar máscara circular
-            mask = Image.new('L', (160, 160), 0)  # Voltando ao tamanho original
+            mask = Image.new('L', (180, 180), 0)
             mask_draw = ImageDraw.Draw(mask)
-            mask_draw.ellipse((0, 0, 160, 160), fill=255)  # Voltando ao tamanho original
+            mask_draw.ellipse((0, 0, 180, 180), fill=255)
             
             # Aplicar máscara
-            output = Image.new('RGBA', (160, 160), (0, 0, 0, 0))  # Voltando ao tamanho original
+            output = Image.new('RGBA', (180, 180), (0, 0, 0, 0))
             output.paste(thumb, (0, 0))
             
             # Calcular posição centralizada para a imagem
-            thumb_x = x + (card_width - 160) // 2  # Voltando ao tamanho original
-            thumb_y = y + 20
+            thumb_x = x + (card_width - 180) // 2
+            thumb_y = y + 15  # Um pouco mais pra cima
             
             # Colar na imagem principal
             image.paste(output, (thumb_x, thumb_y), mask)
         except:
             # Se falhar ao carregar a imagem, desenhar um círculo placeholder
             center_x = x + card_width // 2
-            draw.ellipse((center_x - 80, y + 20, center_x + 80, y + 180),  # Voltando ao tamanho original
+            draw.ellipse((center_x - 90, y + 15, center_x + 90, y + 195),
                         fill=netflix_red, outline=text_color)
         
         # Truncar nomes muito longos
         name = prof_data["name"]
-        if len(name) > 18:  
-            name = name[:15] + "..."  
+        if len(name) > 20:  # Diminuindo limite
+            name = name[:17] + "..."
             
         subject = prof_data["subject"]
-        if len(subject) > 15:  
-            subject = subject[:12] + "..."  
+        if len(subject) > 15:  # Diminuindo limite
+            subject = subject[:12] + "..."
         
         # Calcular posições para centralizar os textos
-        name_width = font_text.getlength(name) if hasattr(font_text, 'getlength') else len(name) * 9  
-        subject_width = font_small.getlength(subject) if hasattr(font_small, 'getlength') else len(subject) * 7  
+        name_width = font_text.getlength(name) if hasattr(font_text, 'getlength') else len(name) * 11
+        subject_width = font_small.getlength(subject) if hasattr(font_small, 'getlength') else len(subject) * 9
         
         name_x = x + (card_width - name_width) // 2
         subject_x = x + (card_width - subject_width) // 2
         
-        draw.text((name_x, y + 150), name, 
+        # Desenhar textos
+        draw.text((name_x, y + 205), name,
                  fill=text_color, font=font_text)
-        draw.text((subject_x, y + 175), subject, 
+        draw.text((subject_x, y + 245), subject,
                  fill=text_color, font=font_small)
     
     # Adicionar créditos na parte inferior com cor mais visível
     credits = "Criado por @danielstudytwt"
-    credits_width = len(credits) * 5
-    draw.text((width - credits_width - 100, height - 30), credits,  # Movido 100px da borda direita
+    draw.text((20, height - 50), credits,  # Movido para a esquerda
               fill=(180, 180, 180), font=font_small)
     return image
 
