@@ -210,7 +210,7 @@ def main():
         for idx, prof_name in enumerate(selected_professors):
             prof_data = professors_dict[prof_name]
             with cols[idx % 3]:
-                st.image(prof_data["thumbnail"], width=80)
+                st.image(prof_data["thumbnail"], width=180)
                 st.write(f"**{prof_data['name']}**")
                 st.write(f"Matéria: {prof_data['subject']}")
         
