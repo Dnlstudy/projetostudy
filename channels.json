@@ -49,14 +49,6 @@
             "featured": false
         },
         {
-            "id": "UCD9M9CFhUR4WMxhD2W1SLKQ",
-            "name": "O Professor Maxwell",
-            "subject": "Matemática",
-            "category": "vestibular",
-            "thumbnail": "https://yt3.ggpht.com/mrGZX392SQK9RpSnMCD2lwRvLiezxvaxwIGO4FnDnOyRnSNPkHPkesLBOoktAjLgzAVlaA8yhw=s800-c-k-c0x00ffffff-no-rj",
-            "featured": false
-        },
-        {
             "id": "UCdrNJIAfB5ag3od5rg9Q_7w",
             "name": "Vogalizando a História",
             "subject": "História",
@@ -302,6 +294,38 @@
             "subject": "Organizacional",
             "category": "vestibular",
             "thumbnail": "https://yt3.ggpht.com/ytc/AIdro_lHtAT_zeta_IC0M2k-v7IceiPMWzZkmgTEhlJpZgTL-w=s800-c-k-c0x00ffffff-no-rj",
+            "featured": false
+        },
+        {
+            "id": "UCkKjZl96unbGWRWw5YiddSQ",
+            "name": "matemagicando por Thaís Guizellini",
+            "subject": "Matemática",
+            "category": "vestibular",
+            "thumbnail": "https://yt3.ggpht.com/LDZSDXPhOHgTgsn9AaAls_esoMWJOc_1gdOY_dWq5mQK1huaue1oSQVgz-umTFdTtu5vMKc7tw=s800-c-k-c0x00ffffff-no-rj",
+            "featured": false
+        },
+        {
+            "id": "UCD9M9CFhUR4WMxhD2W1SLKQ",
+            "name": "O Professor Maxwell",
+            "subject": "Física",
+            "category": "vestibular",
+            "thumbnail": "https://yt3.ggpht.com/mrGZX392SQK9RpSnMCD2lwRvLiezxvaxwIGO4FnDnOyRnSNPkHPkesLBOoktAjLgzAVlaA8yhw=s800-c-k-c0x00ffffff-no-rj",
+            "featured": false
+        },
+        {
+            "id": "UCdVbEymnNSSJ25JbryWLHRA",
+            "name": "Ronaebson",
+            "subject": "Matemática",
+            "category": "vestibular",
+            "thumbnail": "https://yt3.ggpht.com/m1EPFyQCEIBkMmsoBJwliKDQUYTmRhPKwd3R_nLsmmgvxqJEh0BHId5KAay6HAcJi7XquEOpvQ=s800-c-k-c0x00ffffff-no-rj",
+            "featured": false
+        },
+        {
+            "id": "UCQ4VAQPO3zGUlDkaGZW_Z8A",
+            "name": "Mente Matemática com Prof. Fredão",
+            "subject": "Matemática",
+            "category": "vestibular",
+            "thumbnail": "https://yt3.ggpht.com/MpX6UN69-mGfn5vUV-CMy9oUg98DJIlnH4UPvQhUUx2KF6ij1xM6MOSbfcZz8ZoLX0oGIBn7Hg=s800-c-k-c0x00ffffff-no-rj",
             "featured": false
         }
     ],
