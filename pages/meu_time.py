@@ -51,9 +51,9 @@ def create_team_image(selected_professors_data):
         font_loaded = False
         for path in font_paths:
             try:
-                font_title = ImageFont.truetype(path, 120)  # MUITO reduzido
-                font_text = ImageFont.truetype(path, 24)    # Reduzido
-                font_small = ImageFont.truetype(path, 20)   # Reduzido
+                font_title = ImageFont.truetype(path, 120)  # Mantendo fonte do título menor
+                font_text = ImageFont.truetype(path, 24)    # Mantendo fonte do texto menor
+                font_small = ImageFont.truetype(path, 20)   # Mantendo fonte pequena menor
                 font_loaded = True
                 print(f"Fonte carregada com sucesso: {path}")  # Debug
                 break
@@ -72,10 +72,10 @@ def create_team_image(selected_professors_data):
     
     # Adicionar título
     title = "MEU TIME"
-    title_height = 180  # Reduzido
+    title_height = 180  # Mantendo altura menor do título
     
     # Calcular largura do título manualmente
-    title_width = len(title) * 70  # MUITO reduzido
+    title_width = len(title) * 70  # Mantendo largura menor do título
     title_x = (width - title_width) // 2
     title_y = 40  # Um pouco mais pra cima
     
@@ -90,14 +90,14 @@ def create_team_image(selected_professors_data):
               fill=netflix_red, font=font_title)
     
     # Linha de destaque abaixo do título
-    accent_line_height = 4  # Reduzido
+    accent_line_height = 6
     draw.rectangle([(0, title_height), (width, title_height + accent_line_height)], 
                   fill=netflix_red)
     
     # Organizar professores em grid
-    card_width = 250
-    card_height = 200
-    margin = 35
+    card_width = 300  # Voltando ao tamanho original
+    card_height = 250  # Voltando ao tamanho original
+    margin = 45  # Voltando à margem original
     start_y = title_height + accent_line_height + margin
     
     # Calcular posições para centralizar os cards
@@ -113,32 +113,32 @@ def create_team_image(selected_professors_data):
         
         # Desenhar card com borda vermelha
         draw.rectangle([(x, y), (x + card_width, y + card_height)], 
-                      fill=card_color, outline=netflix_red, width=2)
+                      fill=card_color, outline=netflix_red, width=3)
         
         try:
             # Carregar e redimensionar thumbnail
             thumb = get_image_from_url(prof_data["thumbnail"])
-            thumb = thumb.resize((120, 120))
+            thumb = thumb.resize((160, 160))  # Voltando ao tamanho original
             
             # Criar máscara circular
-            mask = Image.new('L', (120, 120), 0)
+            mask = Image.new('L', (160, 160), 0)  # Voltando ao tamanho original
             mask_draw = ImageDraw.Draw(mask)
-            mask_draw.ellipse((0, 0, 120, 120), fill=255)
+            mask_draw.ellipse((0, 0, 160, 160), fill=255)  # Voltando ao tamanho original
             
             # Aplicar máscara
-            output = Image.new('RGBA', (120, 120), (0, 0, 0, 0))
+            output = Image.new('RGBA', (160, 160), (0, 0, 0, 0))  # Voltando ao tamanho original
             output.paste(thumb, (0, 0))
             
             # Calcular posição centralizada para a imagem
-            thumb_x = x + (card_width - 120) // 2
-            thumb_y = y + 15
+            thumb_x = x + (card_width - 160) // 2  # Voltando ao tamanho original
+            thumb_y = y + 20
             
             # Colar na imagem principal
             image.paste(output, (thumb_x, thumb_y), mask)
         except:
             # Se falhar ao carregar a imagem, desenhar um círculo placeholder
             center_x = x + card_width // 2
-            draw.ellipse((center_x - 60, y + 15, center_x + 60, y + 135), 
+            draw.ellipse((center_x - 80, y + 20, center_x + 80, y + 180),  # Voltando ao tamanho original
                         fill=netflix_red, outline=text_color)
         
         # Truncar nomes muito longos
